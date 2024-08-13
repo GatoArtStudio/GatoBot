@@ -190,16 +190,19 @@ async def t(interaction: discord.Interaction, *, mensaje: str):
 @bot.tree.command(name='kill', description='Trolea con /kill al mejor estilo de minecraft')
 async def kill(interaction: discord.Interaction, user: discord.Member):
     descripciones = [
-        f'{user.mention} se ha impactado fuerte contra un cactus mientras luchaba con un zombi.',
-        f'{user.mention}  ha explotado mientras escapaba de un femboy.',
-        f'Una VTUBER ha acabado con la vida de {user.mention}.',
-        f'{user.mention} ha sido asesinado por {interaction.user.mention} con una espada de diamante.',
-        f'{user.mention} ha caído en un pozo de lava gracias a {interaction.user.mention}.',
-        f'{interaction.user.mention} lanzó a {user.mention} desde una gran altura.',
-        f'{user.mention} fue alcanzado por una flecha disparada por {interaction.user.mention}.',
-        f'{interaction.user.mention} empujó a {user.mention} a un grupo de creepers.'
+        (f'{user.mention} se ha impactado fuerte contra un cactus mientras luchaba con un zombi.', 'https://i.giphy.com/5XDOUKNYASC4w.webp'),
+        (f'{user.mention}  ha explotado mientras escapaba de un femboy.', 'https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExYmwzOWxzcjZnd2FzcXV2NWxpM3JvOTZ1ejA2cDIxc24xc281Y25qMyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/iwo6UYIcHBFjlSoEMM/giphy.webp'),
+        (f'Una VTUBER ha acabado con la vida de {user.mention}.', 'https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExYTg3d2toa3hybWlic2IxNnQxcWFmMjF0bXFqOHFuaWd6bmd5Y3E0YiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/elSOUU0caWzmD0lUFA/giphy.webp'),
+        (f'{user.mention} ha sido asesinado por {interaction.user.mention} con una espada de diamante.', 'https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExcXVlbDY2a3MzZmdoNjNrZHBvbDk5ZTd5dHlxb2d4b3NwYmdsM2t6NCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/nOloRAKVYo19y49A2P/giphy.webp'),
+        (f'{user.mention} ha caído en un pozo de lava gracias a {interaction.user.mention}.', 'https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExa2poOW5lZjV1Z3FraWp0ZXpldGo5bWg5eHBicmwzaTNxc3YxYjA0YyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/10OQa9X64897d6/200.webp'),
+        (f'{interaction.user.mention} lanzó a {user.mention} desde una gran altura.', 'https://i.giphy.com/3oxRmGNqKwCzJ0AwPC.webp'),
+        (f'{user.mention} fue alcanzado por una flecha disparada por {interaction.user.mention}.', 'https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExaXBpNWRidzI2c29pZm9uOHhzM2FsYmp4dWM2NGhjcW9pNzJsMHVjbyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/7IRdILBpW73pnUvvDt/giphy.webp'),
+        (f'{interaction.user.mention} empujó a {user.mention} a un grupo de creepers.', 'https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExMTFkczBocGNhb3g4eXpmNDA4amdnenFpenF4b3d1dzFndDYyaGN0eCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/128sfyN2ITIIrS/giphy.webp')
     ]
-    embed = discord.Embed(title=f'{interaction.user.display_name} le dio Kill a {user.display_name}', description=random.choice(descripciones), color=0xff0000)
+    descript, url = random.choice(descripciones)
+    embed = discord.Embed(title=f'{interaction.user.display_name} le dio Kill a {user.display_name}', description=descript, color=ColorDiscord.GREEN.value)
+    embed.set_author(name=user.display_name, icon_url=user.display_avatar.url)
+    embed.set_image(url=url)
     await interaction.response.send_message(f'Troleando a {user.mention}', ephemeral=True)
     await interaction.channel.send(embed=embed, content=f'{user.mention}')
 
