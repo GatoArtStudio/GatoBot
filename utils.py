@@ -6,7 +6,7 @@ async def color_autocomplete(interaction: discord.Interaction, current: str):
     return [
         discord.app_commands.Choice(name=color_name, value=color_name)
         for color_name in color_names if current.lower() in color_name
-    ]
+    ][:25]
 
 async def msg_del(message: discord.Message, logging: object, colors: ColorDiscord):
     '''

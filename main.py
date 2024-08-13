@@ -190,18 +190,24 @@ async def t(interaction: discord.Interaction, *, mensaje: str):
 @bot.tree.command(name='kill', description='Trolea con /kill al mejor estilo de minecraft')
 async def kill(interaction: discord.Interaction, user: discord.Member):
     descripciones = [
-        (f'{user.mention} se ha impactado fuerte contra un cactus mientras luchaba con un zombi.', 'https://i.giphy.com/5XDOUKNYASC4w.webp'),
-        (f'{user.mention}  ha explotado mientras escapaba de un femboy.', 'https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExYmwzOWxzcjZnd2FzcXV2NWxpM3JvOTZ1ejA2cDIxc24xc281Y25qMyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/iwo6UYIcHBFjlSoEMM/giphy.webp'),
-        (f'Una VTUBER ha acabado con la vida de {user.mention}.', 'https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExYTg3d2toa3hybWlic2IxNnQxcWFmMjF0bXFqOHFuaWd6bmd5Y3E0YiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/elSOUU0caWzmD0lUFA/giphy.webp'),
-        (f'{user.mention} ha sido asesinado por {interaction.user.mention} con una espada de diamante.', 'https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExcXVlbDY2a3MzZmdoNjNrZHBvbDk5ZTd5dHlxb2d4b3NwYmdsM2t6NCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/nOloRAKVYo19y49A2P/giphy.webp'),
-        (f'{user.mention} ha caído en un pozo de lava gracias a {interaction.user.mention}.', 'https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExa2poOW5lZjV1Z3FraWp0ZXpldGo5bWg5eHBicmwzaTNxc3YxYjA0YyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/10OQa9X64897d6/200.webp'),
-        (f'{interaction.user.mention} lanzó a {user.mention} desde una gran altura.', 'https://i.giphy.com/3oxRmGNqKwCzJ0AwPC.webp'),
-        (f'{user.mention} fue alcanzado por una flecha disparada por {interaction.user.mention}.', 'https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExaXBpNWRidzI2c29pZm9uOHhzM2FsYmp4dWM2NGhjcW9pNzJsMHVjbyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/7IRdILBpW73pnUvvDt/giphy.webp'),
-        (f'{interaction.user.mention} empujó a {user.mention} a un grupo de creepers.', 'https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExMTFkczBocGNhb3g4eXpmNDA4amdnenFpenF4b3d1dzFndDYyaGN0eCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/128sfyN2ITIIrS/giphy.webp')
+        (f'la cara de {user.mention} hullendo de {interaction.user.mention} al ver semejante sable.', 'https://raw.githubusercontent.com/GatoArtStudios/GatoBot/Gatun/img/giphy5.gif'),
+        (f'{user.mention} se agarro la ñonga a kempachi y ahora unohana lo persigue.', 'https://raw.githubusercontent.com/GatoArtStudios/GatoBot/Gatun/img/giphy5.gif'),
+        (f'{user.mention} soy demaciada diva como para que me trates mal perr*s', 'https://raw.githubusercontent.com/GatoArtStudios/GatoBot/Gatun/img/giphy9.gif'),
+        (f'{user.mention} dice, ey {interaction.user.mention} como es que tienes ese agujero tan blanco, no seas mamon, enseña esa estrategia bro.', 'https://raw.githubusercontent.com/GatoArtStudios/GatoBot/Gatun/img/giphy11.gif'),
+        (f'{user.mention} Esta plenamente enamorado de {interaction.user.mention}, pero es un amor prohibido, ya que {interaction.user.mention} a decidido cazarce con un femboy.', 'https://raw.githubusercontent.com/GatoArtStudios/GatoBot/Gatun/img/giphy13.gif'),
+        (f'{user.mention} fue contagiado de l**b por {interaction.user.mention}, ahora somos libre como el viento UwU.', 'https://raw.githubusercontent.com/GatoArtStudios/GatoBot/Gatun/img/giphy8.gif'),
+        (f'{user.mention}  ha explotado mientras escapaba de un femboy.', 'https://raw.githubusercontent.com/GatoArtStudios/GatoBot/Gatun/img/iwo6UYIcHBFjlSoEMM.gif'),
+        (f'Una VTUBER ha acabado con la vida de {user.mention}.', 'https://raw.githubusercontent.com/GatoArtStudios/GatoBot/Gatun/img/giphy.gif'),
+        (f'{user.mention} ha sido asesinado por {interaction.user.mention} con una espada de diamante.', 'https://raw.githubusercontent.com/GatoArtStudios/GatoBot/Gatun/img/giphy2.gif'),
+        (f'{user.mention} ha caído en un pozo de lava gracias a {interaction.user.mention}.', 'https://raw.githubusercontent.com/GatoArtStudios/GatoBot/Gatun/img/200.gif'),
+        (f'{interaction.user.mention} lanzó a {user.mention} desde una gran altura.', 'https://raw.githubusercontent.com/GatoArtStudios/GatoBot/Gatun/img/B1FAKSmfWqRA4.gif'),
+        (f'{user.mention} fue alcanzado por una flecha disparada por {interaction.user.mention}.', 'https://raw.githubusercontent.com/GatoArtStudios/GatoBot/Gatun/img/giphy4.gif'),
+        (f'{interaction.user.mention} empujó a {user.mention} a un grupo de creepers.', 'https://raw.githubusercontent.com/GatoArtStudios/GatoBot/Gatun/img/giphy3.gif')
     ]
     descript, url = random.choice(descripciones)
-    embed = discord.Embed(title=f'{interaction.user.display_name} le dio Kill a {user.display_name}', description=descript, color=ColorDiscord.GREEN.value)
+    embed = discord.Embed(title=None, description=descript, color=ColorDiscord.GREEN.value)
     embed.set_author(name=user.display_name, icon_url=user.display_avatar.url)
+    embed.set_footer(text=f'Por {interaction.user.display_name}', icon_url=interaction.user.display_avatar.url)
     embed.set_image(url=url)
     await interaction.response.send_message(f'Troleando a {user.mention}', ephemeral=True)
     await interaction.channel.send(embed=embed, content=f'{user.mention}')
@@ -227,6 +233,7 @@ async def killuser(interaction: discord.Interaction, user: discord.Member):
 @app_commands.describe(color='Color del Embed', title='Tiulo del Embed', description='Descripción del Embed', description_embed='Descripción del Embed', author='Autor del Embed', channel='Canal donde se enviara el Embed')
 async def create_embed(interaction: discord.Interaction, channel: discord.TextChannel, color: str, title: typing.Optional[str] = None, description: typing.Optional[str] = None, description_embed: typing.Optional[str] = None, author: typing.Optional[discord.Member] = None):
     color_value = ColorDiscord[color.upper()].value
+    description_embed = description_embed.replace('\\n', '\n')
     embed = discord.Embed(
         title=title,
         description=description_embed,
@@ -237,11 +244,16 @@ async def create_embed(interaction: discord.Interaction, channel: discord.TextCh
         await channel.send(embed=embed)
         await interaction.response.send_message(f"Mensaje enviado al canal {channel.mention}")
     elif author is None:
-        await channel.send(f'{description}\n',embed=embed)
+        await channel.send(content=description,embed=embed)
         await interaction.response.send_message(f"Mensaje enviado al canal {channel.mention}")
     else:
-        await channel.send(f'{description}\n\nAutor: {author}',embed=embed)
-        await interaction.response.send_message(f"Mensaje enviado al canal {channel.mention}")
+        if description is None:
+            embed.set_author(name=author.display_name, icon_url=author.display_avatar.url)
+            await channel.send(embed=embed)
+            await interaction.response.send_message(f"Mensaje enviado al canal {channel.mention}")
+        else:
+            await channel.send(f'{description}\n\nAutor: {author}',embed=embed)
+            await interaction.response.send_message(f"Mensaje enviado al canal {channel.mention}")
 
 # Conecta el bot usando el token del bot
 def check_internet_connection() -> bool:
