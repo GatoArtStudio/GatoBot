@@ -190,6 +190,7 @@ async def t(interaction: discord.Interaction, *, mensaje: str):
 @bot.tree.command(name='kill', description='Trolea con /kill al mejor estilo de minecraft')
 async def kill(interaction: discord.Interaction, user: discord.Member):
     descripciones = [
+        (f'{user.mention} le exploto un globo a los niños y ahora le pegan.', 'https://raw.githubusercontent.com/GatoArtStudios/GatoBot/Gatun/img/Jushiro%20Ukitake%20and%20Sogyo%20no%20Kotowari.gif'),
         (f'la cara de {user.mention} hullendo de {interaction.user.mention} al ver semejante sable.', 'https://raw.githubusercontent.com/GatoArtStudios/GatoBot/Gatun/img/giphy5.gif'),
         (f'{user.mention} se agarro la ñonga a kempachi y ahora unohana lo persigue.', 'https://raw.githubusercontent.com/GatoArtStudios/GatoBot/Gatun/img/giphy5.gif'),
         (f'{user.mention} soy demaciada diva como para que me trates mal perr*s', 'https://raw.githubusercontent.com/GatoArtStudios/GatoBot/Gatun/img/giphy9.gif'),
