@@ -6,7 +6,6 @@ import aiohttp
 from aiohttp import client_exceptions
 import time
 import ping3
-from dns.resolver import query
 
 from config import TOKEN
 import typing

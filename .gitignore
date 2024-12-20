@@ -174,3 +174,4 @@ test.py
 trusted_client_host_keys
 trusted_server_keys
 ffmpeg/
+temp_package
