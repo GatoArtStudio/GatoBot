@@ -6,15 +6,18 @@ import aiohttp
 from aiohttp import client_exceptions
 import time
 import ping3
+from dns.resolver import query
+
 from config import TOKEN
 import typing
 import logging
-import ui
+import ui_dc as ui
 import utils
 import datetime
 import random
 import asyncio
 from types_utils import ColorDiscord
+import music_utils
 # import api_sql
 
 logging.basicConfig(
@@ -33,7 +36,14 @@ intents.messages = True
 intents.guilds = True
 
 bot = commands.Bot(command_prefix='/', intents=intents)
+
 # Evento de inicio
+
+# sincronizar UIs
+@bot.event
+async def setup_hook():
+    bot.add_view(ui.MenuMusica())
+
 @bot.event
 async def on_ready() -> None:
     """Evento de inicio, se activa cuando el bot se conecta a un servidor.
@@ -55,7 +65,8 @@ async def on_ready() -> None:
     # )
 
     presence = discord.Activity(
-        name = 'tu video en 4🥵',
+        # name = 'tu video en 4🥵',
+        name = '🛠️ Bot en mantenimiento 🛠️',
         url = 'https://linktr.ee/gatoartstudio',
         type = discord.ActivityType.watching,
         state = 'Bot de Discord en beta y en desarrollo, actualmente en 4🥵',
@@ -68,6 +79,8 @@ async def on_ready() -> None:
         buttons = ['/kill', '/t', '/create_embed', '/purge']
     )
 
+    # Seteamos el hilo del bot en music_utils
+    music_utils.bot = bot
 
     try:
         synced = await bot.tree.sync()
@@ -105,7 +118,25 @@ async def on_message(message: discord.Message):
         await utils.msg_del(message, logging, ColorDiscord.RED)
         return
 
+    # --------------------------------------- Sistema anti spam ---------------------------------------
+
+    # Anti spam de links engañosos
+    if '[store.steampowered.com' in message.content:
+        await message.delete()
+        try:
+            # Aisla al usuario
+            timeout_expiry = datetime.timedelta(seconds=60)
+            await message.author.timeout(timeout_expiry, reason="Aislad@ por 60 segundos, por enviar link engañoso de steam")
+            # Response del comando
+            logging.warning(f'El usuario: {message.author.display_name}, ID: {message.author.id} Esta haciendo spam, mensaje: {message.content}')
+        except discord.Forbidden:
+            logging.error("No tengo permisos para aislar a este usuario.")
+        except discord.HTTPException as e:
+            logging.error(f"Ocurrió un error al intentar aislar al usuario: {message.author.display_name}, error: {e}")
+
     # Agrega el mensaje o nombre de adjunto a data_msg
+    if message.author.id not in data_msg:
+        data_msg[message.author.id] = []
     if message.content:
         data_msg[message.author.id].append(message.content)
     elif message.attachments:
@@ -180,8 +211,8 @@ async def test(interaction: discord.Interaction):
     Args:
         interaction (discord.Interaction): La interaccion que se realiza este comando.
     """
-    ui = ui.UIEMBED()
-    await interaction.response.send_modal(ui)
+    modal = ui.UIEMBED()
+    await interaction.response.send_modal(modal)
 
 @bot.tree.command(name='t', description='Comandos para el uso de tts (Texto a voz)')
 async def t(interaction: discord.Interaction, *, mensaje: str):
@@ -256,6 +287,50 @@ async def create_embed(interaction: discord.Interaction, channel: discord.TextCh
             await channel.send(f'{description}\n\nAutor: {author}',embed=embed)
             await interaction.response.send_message(f"Mensaje enviado al canal {channel.mention}")
 
+
+@bot.tree.command(name='play', description='Escucha musica')
+async def play(interaction: discord.Interaction, query: str):
+    args = query.split(' ')
+    query = " ".join(args)
+    try:
+        voice_channel = interaction.user.voice.channel
+    except:
+        await interaction.response.send_message("No estas en un canal de voz", ephemeral=True)
+        return
+    if music_utils.is_paused:
+        music_utils.vc.resume()
+        await interaction.followup.send("> La reproducción ha sido reanudada.")
+        return
+    else:
+        await interaction.response.defer(ephemeral=True) # Espera la respuesta del comando
+        song = music_utils.search_yt(query)
+        print(f'Resultado de la busqueda: {song}')
+        if type(song) == bool and not song:
+            await interaction.response.send_message("No se pudo descargar la cancion", ephemeral=True)
+            return
+        # Verificamos si ya se está reproduciendo algo
+        if music_utils.is_playing:
+            position_in_queue = len(music_utils.music_queue) + 2
+            await interaction.followup.send(f"**#{position_in_queue} - '{song['title']}'** agregado a la cola")
+        else:
+            await interaction.followup.send(f"**'{song['title']}'** agregado a la cola")
+
+        # Añadimos la canción a la cola
+        music_utils.music_queue.append([song, voice_channel])
+
+        # Si no hay canciones reproduciéndose, comenzamos la reproducción
+        if not music_utils.is_playing:
+            await music_utils.play_music(interaction)
+            music_ui = ui.MenuMusica()
+            await interaction.followup.send(f"**'{song['title']}'** comenzando a reproducirse" ,view=music_ui)
+
+
+@bot.tree.command(name='menu_music', description='Muestra el menu de musica')
+async def menu_music(interaction: discord.Interaction):
+    await interaction.response.send_message("Menu de musica", view=ui.MenuMusica())
+
+
+
 # Conecta el bot usando el token del bot
 def check_internet_connection() -> bool:
     """
@@ -312,4 +387,49 @@ static void UpdatePresence()
     discordPresence.joinSecret = "MTI4NzM0OjFpMmhuZToxMjMxMjM= ";
     Discord_UpdatePresence(&discordPresence);
 }
+'''
+'''
+from collections import deque
+
+TIMEOUT_SECONDS = 60
+SPAM_MESSAGE_COUNT = 2
+
+async def handle_everyone_mention(message):
+    if not message.author.guild_permissions.mention_everyone and '@everyone' in message.content:
+        await utils.msg_del(message, logging, ColorDiscord.RED)
+        return True
+    return False
+
+async def handle_spam_links(message):
+    if '[store.steampowered.com' in message.content:
+        await message.delete()
+        try:
+            timeout_expiry = datetime.timedelta(seconds=TIMEOUT_SECONDS)
+            await message.author.timeout(timeout_expiry, reason="Aislad@ por 60 segundos, por enviar link engañoso de steam")
+            logging.warning(f'El usuario: {message.author.display_name}, ID: {message.author.id} Esta haciendo spam, mensaje: {message.content}')
+        except (discord.Forbidden, discord.HTTPException) as e:
+            logging.error(f"No tengo permisos para aislar a este usuario o ocurrió un error: {e}")
+
+async def handle_message_logging(message, data_msg):
+    if message.author.id not in data_msg:
+        data_msg[message.author.id] = deque(maxlen=SPAM_MESSAGE_COUNT + 1)
+    if message.content:
+        data_msg[message.author.id].append(message.content)
+    elif message.attachments:
+        for adjunt in message.attachments:
+            data_msg[message.author.id].append(adjunt.filename)
+    else:
+        return
+
+    if len(data_msg[message.author.id]) >= SPAM_MESSAGE_COUNT:
+        if all(msg == data_msg[message.author.id][0] for msg in data_msg[message.author.id]):
+            await utils.msg_del(message, logging, ColorDiscord.RED)
+        else:
+            await utils.msg_advertence(message, logging, ColorDiscord.YELLOW)
+
+async def on_message(message):
+    if await handle_everyone_mention(message):
+        return
+    await handle_spam_links(message)
+    await handle_message_logging(message, data_msg)
 '''
