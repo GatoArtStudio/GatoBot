@@ -1,3 +1,5 @@
+import sys
+
 import discord
 from discord.ext import commands
 from discord import app_commands
@@ -14,10 +16,8 @@ import ui_dc as ui
 import utils
 import datetime
 import random
-import asyncio
 from types_utils import ColorDiscord
 import music_utils
-# import api_sql
 
 logging.basicConfig(
     filename='app_discord.log',
@@ -93,6 +93,7 @@ async def on_ready() -> None:
     await bot.change_presence(activity=presence)
 
 data_msg = {}
+RETRY_DELAY = 3  # Tiempo de espera entre intentos
 
 # Evento de mensaje
 @bot.event
@@ -308,23 +309,32 @@ def check_internet_connection() -> bool:
     response: typing.Optional[ping3.PingResult] = ping3.ping(target_host)
     return response is not None
 
-# Ejemplo de uso
+def handle_bot_connection():
+    """Establece conexión con el bot y maneja posibles errores."""
+    try:
+        logging.info("Estableciendo conexion...")
+        # Notificar al Docker cuando el bot arranque correctamente
+        with open("/tmp/bot_ready", "w") as f:
+            f.write("Bot is ready")
+        bot.run(TOKEN)
+    except (socket.gaierror, aiohttp.client_exceptions.ClientConnectorError, RuntimeError):
+        logging.error("Conexion cerrada por error de red.")
+        if check_internet_connection():
+            sys.exit(9)
+
+def wait_and_retry_connection():
+    """Espera un tiempo y luego vuelve a intentar la conexión."""
+    logging.error("Intentando reconectar...")
+    time.sleep(RETRY_DELAY)
+
+# Ejecución principal del proceso
 while True:
     if check_internet_connection():
-        logging.info("Hay conexión a Internet")
-        time.sleep(3)
-        # Aquí puedes intentar la conexión del bot
-        try:
-            logging.info("Estableciendo conexion...")
-            bot.run(TOKEN)
-            time.sleep(3)
-        except (socket.gaierror, aiohttp.client_exceptions.ClientConnectorError, RuntimeError):
-            logging.error("Conexion cerrada por error de red.")
+        logging.info("Hay conexion a internet")
+        time.sleep(RETRY_DELAY)
+        handle_bot_connection()
     else:
-        logging.error("No hay conexión a Internet. Intentando reconectar...")
-        # Aquí puedes repetir el proceso de verificación de conexión después de un tiempo determinado
-        time.sleep(3)
-        continue
+        wait_and_retry_connection()
 
 # Link para agregar el bot al servidor
 # https://discord.com/oauth2/authorize?client_id=1108545284264431656

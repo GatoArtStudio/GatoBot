@@ -1,18 +1,20 @@
 from collections import deque
 import datetime
-from typing import Optional
 import discord
 from types_utils import ColorDiscord
 import utils
-import logging
 
 
-logging: Optional[logging.basicConfig()] = None
+logging = None
 
 TIMEOUT_SECONDS = 60
 SPAM_MESSAGE_COUNT = 2
 
-async def handle_everyone_mention(message):
+async def handle_everyone_mention(message: discord.Message):
+    if message.author.bot:
+        return
+    if message.author.guild_permissions.administrator:
+        return
     if not message.author.guild_permissions.mention_everyone and '@everyone' in message.content:
         await utils.msg_del(message, logging, ColorDiscord.RED)
         return True
