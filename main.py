@@ -6,7 +6,7 @@ import aiohttp
 from aiohttp import client_exceptions
 import time
 import ping3
-
+import events
 from config import TOKEN
 import typing
 import logging
@@ -64,8 +64,8 @@ async def on_ready() -> None:
     # )
 
     presence = discord.Activity(
-        # name = 'tu video en 4🥵',
-        name = '🛠️ Bot en mantenimiento 🛠️',
+        name = 'tu video en 4🥵',
+        # name = '🛠️ Bot en mantenimiento 🛠️',
         url = 'https://linktr.ee/gatoartstudio',
         type = discord.ActivityType.watching,
         state = 'Bot de Discord en beta y en desarrollo, actualmente en 4🥵',
@@ -78,8 +78,12 @@ async def on_ready() -> None:
         buttons = ['/kill', '/t', '/create_embed', '/purge']
     )
 
-    # Seteamos el hilo del bot en music_utils
+    # ----------------------------------------------- Variables en otros modulos -----------------------------------------------
+    # music_utils.py
     music_utils.bot = bot
+    # events.py
+    events.logging = logging
+    events.data_msg = data_msg
 
     try:
         synced = await bot.tree.sync()
@@ -105,54 +109,10 @@ async def on_message(message: discord.Message):
         message (discord.Message): El mensaje que se ha recibido.
     """
     # Verifica si el autor del mensaje es un bot
-    if message.author.bot:
+    if await events.handle_everyone_mention(message):
         return
-
-    # Verifica si el autor del mensaje tiene permisos de administrador
-    if message.author.guild_permissions.administrator:
-        return
-
-    # Verifica si el mensaje contiene @everyone y si el autor no tiene permiso para mencionar a @everyone
-    if not message.author.guild_permissions.mention_everyone and '@everyone' in message.content:
-        await utils.msg_del(message, logging, ColorDiscord.RED)
-        return
-
-    # --------------------------------------- Sistema anti spam ---------------------------------------
-
-    # Anti spam de links engañosos
-    if '[store.steampowered.com' in message.content:
-        await message.delete()
-        try:
-            # Aisla al usuario
-            timeout_expiry = datetime.timedelta(seconds=60)
-            await message.author.timeout(timeout_expiry, reason="Aislad@ por 60 segundos, por enviar link engañoso de steam")
-            # Response del comando
-            logging.warning(f'El usuario: {message.author.display_name}, ID: {message.author.id} Esta haciendo spam, mensaje: {message.content}')
-        except discord.Forbidden:
-            logging.error("No tengo permisos para aislar a este usuario.")
-        except discord.HTTPException as e:
-            logging.error(f"Ocurrió un error al intentar aislar al usuario: {message.author.display_name}, error: {e}")
-
-    # Agrega el mensaje o nombre de adjunto a data_msg
-    if message.author.id not in data_msg:
-        data_msg[message.author.id] = []
-    if message.content:
-        data_msg[message.author.id].append(message.content)
-    elif message.attachments:
-        for adjunt in message.attachments:
-            data_msg[message.author.id].append(adjunt.filename)
-    else:
-        return
-
-    # Verifica si ya tiene 2 mensajes registrados
-    if len(data_msg[message.author.id]) >= 2:
-        # Verifica si el ultimo mensaje es igual al semi-ultimo mensaje
-        if data_msg[message.author.id][-1] == data_msg[message.author.id][-2]:
-            # Verifica si el ultimo mensaje es igual al tercer-avo mensaje ultimo
-            if len(data_msg[message.author.id]) >= 3 and data_msg[message.author.id][-1] == data_msg[message.author.id][-3]:
-                await utils.msg_del(message, logging, ColorDiscord.RED)
-            else:
-                await utils.msg_advertence(message, logging, ColorDiscord.YELLOW)
+    await events.handle_spam_links(message)
+    await events.handle_message_logging(message, data_msg)
 
 # Comando personalizado
 @bot.tree.command(name='purge', description='Elimina los mensajes de un usuario en las ultimas horas.')
@@ -366,69 +326,6 @@ while True:
         time.sleep(3)
         continue
 
-# https://discord.com/api/oauth2/authorize?client_id=1108545284264431656&permissions=8&scope=applications.commands%20bot
-'''
-static void UpdatePresence()
-{
-    DiscordRichPresence discordPresence;
-    memset(&discordPresence, 0, sizeof(discordPresence));
-    discordPresence.state = "En Desarrollo";
-    discordPresence.details = "Bot en version beta y en desarrollo.";
-    discordPresence.startTimestamp = 1507665886;
-    discordPresence.endTimestamp = 1507665886;
-    discordPresence.largeImageKey = "logo_fondo_cubico";
-    discordPresence.largeImageText = "Numbani";
-    discordPresence.smallImageKey = "logo_fondo_circular";
-    discordPresence.smallImageText = "Rogue - Level 100";
-    discordPresence.partyId = "ae488379-351d-4a4f-ad32-2b9b01c91657";
-    discordPresence.partySize = 1;
-    discordPresence.partyMax = 5;
-    discordPresence.joinSecret = "MTI4NzM0OjFpMmhuZToxMjMxMjM= ";
-    Discord_UpdatePresence(&discordPresence);
-}
-'''
-'''
-from collections import deque
-
-TIMEOUT_SECONDS = 60
-SPAM_MESSAGE_COUNT = 2
-
-async def handle_everyone_mention(message):
-    if not message.author.guild_permissions.mention_everyone and '@everyone' in message.content:
-        await utils.msg_del(message, logging, ColorDiscord.RED)
-        return True
-    return False
-
-async def handle_spam_links(message):
-    if '[store.steampowered.com' in message.content:
-        await message.delete()
-        try:
-            timeout_expiry = datetime.timedelta(seconds=TIMEOUT_SECONDS)
-            await message.author.timeout(timeout_expiry, reason="Aislad@ por 60 segundos, por enviar link engañoso de steam")
-            logging.warning(f'El usuario: {message.author.display_name}, ID: {message.author.id} Esta haciendo spam, mensaje: {message.content}')
-        except (discord.Forbidden, discord.HTTPException) as e:
-            logging.error(f"No tengo permisos para aislar a este usuario o ocurrió un error: {e}")
-
-async def handle_message_logging(message, data_msg):
-    if message.author.id not in data_msg:
-        data_msg[message.author.id] = deque(maxlen=SPAM_MESSAGE_COUNT + 1)
-    if message.content:
-        data_msg[message.author.id].append(message.content)
-    elif message.attachments:
-        for adjunt in message.attachments:
-            data_msg[message.author.id].append(adjunt.filename)
-    else:
-        return
-
-    if len(data_msg[message.author.id]) >= SPAM_MESSAGE_COUNT:
-        if all(msg == data_msg[message.author.id][0] for msg in data_msg[message.author.id]):
-            await utils.msg_del(message, logging, ColorDiscord.RED)
-        else:
-            await utils.msg_advertence(message, logging, ColorDiscord.YELLOW)
-
-async def on_message(message):
-    if await handle_everyone_mention(message):
-        return
-    await handle_spam_links(message)
-    await handle_message_logging(message, data_msg)
-'''
+# Link para agregar el bot al servidor
+# https://discord.com/oauth2/authorize?client_id=1108545284264431656
+# Link para agregar el bot al servidor

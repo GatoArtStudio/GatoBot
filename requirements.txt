@@ -2,3 +2,4 @@ python-dotenv>=1.0.1
 discord>=2.3.2
 ffmpeg>=1.4
 yt-dlp>=2023.12.13
+ping3>=4.0.8
