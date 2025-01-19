@@ -14,7 +14,7 @@ class Presence(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
         self.presence = discord.Activity(
-            name = 'tu video en 4🥵',
+            name = 'en 4🥵',
             # name = '🛠️ Bot en mantenimiento 🛠️',
             url = 'https://linktr.ee/gatoartstudio',
             type = discord.ActivityType.watching,
