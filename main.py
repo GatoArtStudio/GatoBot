@@ -1,14 +1,13 @@
 import sys
 
 import discord
-from discord.ext import commands
+from discord.ext import commands, voice_recv
 from discord import app_commands
 import socket
 import aiohttp
 from aiohttp import client_exceptions
 import time
 import ping3
-import events
 from config import TOKEN
 import typing
 import logging
@@ -17,15 +16,16 @@ import utils
 import datetime
 import random
 from types_utils import ColorDiscord
+import threading
 import music_utils
+from logging_config import setup_logging
+import os
+import re
+import asyncio
 
-logging.basicConfig(
-    filename='app_discord.log',
-    level=logging.DEBUG,
-    encoding='utf-8',
-    format='%(asctime)s - %(levelname)s - %(message)s',
-    datefmt='%Y-%m-%d %H:%M:%S'
-)
+# Configuración de logging
+setup_logging()
+logger = logging.getLogger(__name__)
 
 # Clases
 
@@ -36,9 +36,9 @@ intents.guilds = True
 
 bot = commands.Bot(command_prefix='/', intents=intents)
 
-# Evento de inicio
 
-# sincronizar UIs
+# sincronizar
+
 @bot.event
 async def setup_hook():
     bot.add_view(ui.MenuMusica())
@@ -56,98 +56,25 @@ async def on_ready() -> None:
     Args:
         None
     """
-    logging.info(f'Conectado como {bot.user.name} ({bot.user.id})')
-    # custom_emoji = discord.PartialEmoji(name='😎', animated=False)
-    # presence = discord.CustomActivity(
-    #         name='😎 ¡Estoy programando! | Bot de Discord en beta y desarrollo | Desarrollador: @GatoArtStudio',
-    #     emoji=custom_emoji
-    # )
-
-    presence = discord.Activity(
-        name = 'tu video en 4🥵',
-        # name = '🛠️ Bot en mantenimiento 🛠️',
-        url = 'https://linktr.ee/gatoartstudio',
-        type = discord.ActivityType.watching,
-        state = 'Bot de Discord en beta y en desarrollo, actualmente en 4🥵',
-        details = 'Bot',
-        platform = 'Discord',
-        assets = {
-            'large_image': 'logo_fondo_circular',
-            'large_text': 'GatoArtStudio',
-        },
-        buttons = ['/kill', '/t', '/create_embed', '/purge']
-    )
+    logger.info(f'Conectado como {bot.user.name} ({bot.user.id})')
 
     # ----------------------------------------------- Variables en otros modulos -----------------------------------------------
-    # music_utils.py
     music_utils.bot = bot
-    # events.py
-    events.logging = logging
-    events.data_msg = data_msg
+
+    
+    # ----------------------------------------------- Sincronizar comandos -----------------------------------------------
 
     try:
+        # Sincroniza los nuevos comandos
+        logger.info('Sincronizando comandos...')
         synced = await bot.tree.sync()
-        logging.info(f'synced {len(synced)} commands (s)')
+        logger.info(f'Sincronizado {len(synced)} comando (s)')
     except Exception as e:
-        logging.error(f'Tipo de error {e}')
-    await bot.change_presence(activity=presence)
+        logger.error(f'Tipo de error {e}')
 
-data_msg = {}
 RETRY_DELAY = 3  # Tiempo de espera entre intentos
 
-# Evento de mensaje
-@bot.event
-async def on_message(message: discord.Message):
-    """Evento de mensaje, se activa cuando se recibe un mensaje en un canal de texto.
-
-    Verifica si el mensaje no es de un bot y si el autor no tiene permisos de administrador.
-    Verifica si el mensaje contiene @everyone y si el autor no tiene permiso para mencionar a @everyone, elimina el mensaje de spam.
-    Agrega el mensaje o nombre de adjunto a data_msg.
-    Si ya tiene 2 mensajes registrados, verifica si el ultimo mensaje es igual al semi-ultimo mensaje o al tercer-avo mensaje ultimo y elimina el mensaje de spam o manda advertencia.
-
-
-    Args:
-        message (discord.Message): El mensaje que se ha recibido.
-    """
-    # Verifica si el autor del mensaje es un bot
-    if await events.handle_everyone_mention(message):
-        return
-    await events.handle_spam_links(message)
-    await events.handle_message_logging(message, data_msg)
-
 # Comando personalizado
-@bot.tree.command(name='purge', description='Elimina los mensajes de un usuario en las ultimas horas.')
-@commands.has_permissions(administrator=True)
-async def purge_user(interaction: discord.Interaction, user: discord.Member, horas: typing.Literal[7, 24, 48, 72] = 24) -> None:
-    """Elimina los mensajes de un usuario en las ultimas horas.
-
-    Args:
-        interaction (discord.Interaction): La interaccion que se realiz  este comando.
-        user (discord.Member): El usuario cuyos mensajes se van a eliminar.
-        horas (int, optional): El numero de horas que se considerar  n recientes. Defaults to 24.
-
-    Returns:
-        None
-    """
-    now = datetime.datetime.now(datetime.timezone.utc)
-    time_limit = now - datetime.timedelta(hours=horas)
-
-    def is_recent_and_from_user(message: discord.Message) -> bool:
-        """Verifica si un mensaje es reciente y lo hizo el usuario especificado.
-
-        Args:
-            message (discord.Message): El mensaje a verificar.
-
-        Returns:
-            bool: True si es reciente y lo hizo el usuario especificado, False en caso contrario.
-        """
-        return message.author == user and message.created_at >= time_limit
-
-    deleted_messages = await interaction.channel.purge(limit=1000, check=is_recent_and_from_user)
-    await interaction.response.send_message(
-        f'Se han eliminado {len(deleted_messages)} mensajes de {user.display_name} de las ultimas {horas} horas.',
-        ephemeral=True
-    )
 
 @bot.tree.command(name='saludo', description='Este comando te saluda UwU')
 async def saludo(interaction: discord.Interaction):
@@ -289,10 +216,63 @@ async def play(interaction: discord.Interaction, query: str):
 async def menu_music(interaction: discord.Interaction):
     await interaction.response.send_message("Menu de musica", view=ui.MenuMusica())
 
+@bot.tree.command(name='voice_join', description='Ingresa a un canal de voz')
+async def voice_join(interaction: discord.Interaction, channel: discord.VoiceChannel):
+    await channel.connect()
+    await channel.send(f'Conectado al canal de voz {channel.mention}')
+    await interaction.response.send_message(f'Conectado al canal de voz {channel.mention}', ephemeral=True)
+
+
+@bot.tree.command(name='voice_stop', description='Sale de un canal de voz')
+async  def voice_stop(interaction: discord.Interaction):
+    if interaction.guild.voice_client:
+        await interaction.guild.voice_client.disconnect()
+        await interaction.response.send_message(f'Desconectado del canal de voz', ephemeral=True)
+    else:
+        await interaction.response.send_message(f'No estoy conectado al canal de voz', ephemeral=True)
+
+
+@bot.tree.command(name='voice_rec', description='Inicia la grabación en canal de voz')
+async def voice_rec(interaction: discord.Interaction, channel: discord.VoiceChannel):
+    try:
+        # Obtenemos la fecha y hora actual la cual se usara para el nombre del archivo
+        fchtime = datetime.datetime.now().strftime("%Y-%m-%d %H.%M.%S")
+
+        # Definimos la funcion de callback que se encargara de gestionar los datos de entrada de voz
+        def callback(user, data: voice_recv.VoiceData):
+            logger.info(f'User: {user} Data: {data}')
+
+            # Limpiamos el nombre del usuario de caracteres especiales
+            user = re.sub(r'[^a-zA-Z0-9_\-\. ]', '', user.name)
+
+            # Guarda el audio en un archivo dentro de el directorio recordings
+            # Si no existe el directorio para guardar las grabaciones, lo crea
+            if not os.path.exists('recordings'):
+                os.makedirs('recordings')
+
+            # Escribimos los datos en caliente en el archivo
+            name_file = f'{user}_{fchtime}.pcm'
+            with open(f'recordings/{name_file}', 'ab') as f:
+                f.write(data.pcm)
+
+        await interaction.response.send_message(f'Conectado al canal de voz {channel.mention}', ephemeral=True)
+        vc = await channel.connect(cls=voice_recv.VoiceRecvClient)
+        vc.listen(voice_recv.BasicSink(callback))
+
+    except Exception as e:
+        logger.error(f'Error al iniciar la grabación: {e}')
+        if not interaction.response.is_done():
+            await interaction.response.send_message(
+                f'Error al intentar grabar: {e}',
+                ephemeral=True
+            )
+        else:
+            await interaction.followup.send(f'Error al intentar grabar: {e}')
+
 
 
 # Conecta el bot usando el token del bot
-def check_internet_connection() -> bool:
+async def check_internet_connection() -> bool:
     """
     Comprueba si hay conexión a Internet.
 
@@ -305,36 +285,62 @@ def check_internet_connection() -> bool:
     Returns:
         bool: True si hay conexión a Internet, False en caso contrario.
     """
-    target_host: str = 'discord.com'
-    response: typing.Optional[ping3.PingResult] = ping3.ping(target_host)
-    return response is not None
+    target_host: str = 'https://discord.com'
+    async with aiohttp.ClientSession() as session:
+        try:
+            async with session.head(target_host) as res:
+                return res.status == 200
+        except aiohttp.ClientError as e:
+            logger.error(e)
+            return False
 
-def handle_bot_connection():
+async def handle_bot_connection():
     """Establece conexión con el bot y maneja posibles errores."""
     try:
-        logging.info("Estableciendo conexion...")
-        # Notificar al Docker cuando el bot arranque correctamente
-        with open("/tmp/bot_ready", "w") as f:
-            f.write("Bot is ready")
-        bot.run(TOKEN)
-    except (socket.gaierror, aiohttp.client_exceptions.ClientConnectorError, RuntimeError):
-        logging.error("Conexion cerrada por error de red.")
-        if check_internet_connection():
-            sys.exit(9)
+        logger.info("Estableciendo conexion...")
+        async with bot:
+            # cargamos los cogs
+            for filename in os.listdir('./event'):
+                if filename.endswith('.py'):
+                    await bot.load_extension(f'event.{filename[:-3]}')
+            
+            for filename in os.listdir('./commands'):
+                if filename.endswith('.py'):
+                    await bot.load_extension(f'commands.{filename[:-3]}')
+            
+            # Iniciamos el bot
+            await bot.start(TOKEN)
 
-def wait_and_retry_connection():
+    except KeyboardInterrupt:
+        logger.info("Saliendo...")
+        sys.exit(0)
+
+    except (socket.gaierror, aiohttp.client_exceptions.ClientConnectorError, RuntimeError):
+        logger.error("Conexion cerrada por error de red.")
+        if await check_internet_connection():
+            sys.exit(1)
+    
+    except Exception as e:
+        logger.error(f"Error inesperado: {str(e)}")
+        sys.exit(2)  # Error genérico para otros problemas no cubiertos previamente
+
+async def wait_and_retry_connection():
     """Espera un tiempo y luego vuelve a intentar la conexión."""
-    logging.error("Intentando reconectar...")
-    time.sleep(RETRY_DELAY)
+    logger.error("Intentando reconectar...")
+    await asyncio.sleep(RETRY_DELAY)
 
 # Ejecución principal del proceso
-while True:
-    if check_internet_connection():
-        logging.info("Hay conexion a internet")
-        time.sleep(RETRY_DELAY)
-        handle_bot_connection()
-    else:
-        wait_and_retry_connection()
+async def main():
+    while True:
+        res = await check_internet_connection()
+        if res:
+            logger.info("Hay conexion a internet")
+            await asyncio.sleep(RETRY_DELAY)
+            await handle_bot_connection()
+        else:
+            await wait_and_retry_connection()
+
+asyncio.run(main())
 
 # Link para agregar el bot al servidor
 # https://discord.com/oauth2/authorize?client_id=1108545284264431656
