@@ -33,6 +33,11 @@ class Moderation(commands.Cog):
         Returns:
             None
         """
+        # Compruba si el usuario tiene permisos de administracion
+        if not interaction.user.guild_permissions.administrator:
+            await interaction.response.send_message("No tienes permisos para usar este comando.", ephemeral=True)
+            return
+        
         now = datetime.datetime.now(datetime.timezone.utc)
         time_limit = now - datetime.timedelta(hours=horas)
 
@@ -56,6 +61,10 @@ class Moderation(commands.Cog):
     @app_commands.command(name='timeout', description='Aisla por x numero de minutos')
     @commands.has_permissions(ban_members=True)
     async def timeout_user(self, interaction: discord.Interaction, user: discord.Member, minutos: int = 5):
+        # Compruba si el usuario tiene permisos de administracion
+        if not interaction.user.guild_permissions.administrator:
+            await interaction.response.send_message("No tienes permisos para usar este comando.", ephemeral=True)
+            return
         try:
             # Aisla al usuario
             timeout_expiry = datetime.timedelta(minutes=minutos)
@@ -70,6 +79,10 @@ class Moderation(commands.Cog):
     @app_commands.command(name='untimeout', description='Desaisla a un usuario')
     @commands.has_permissions(ban_members=True)
     async def untimeout_user(self, interaction: discord.Interaction, user: discord.Member):
+        # Compruba si el usuario tiene permisos de administracion
+        if not interaction.user.guild_permissions.administrator:
+            await interaction.response.send_message("No tienes permisos para usar este comando.", ephemeral=True)
+            return
         try:
             # Desaisla al usuario
             await user.timeout(None)
@@ -83,6 +96,10 @@ class Moderation(commands.Cog):
     @app_commands.command(name='ban', description='Banea a un usuario')
     @commands.has_permissions(ban_members=True)
     async def ban_user(self, interaction: discord.Interaction, user: discord.Member, motivo: typing.Optional[str] = None, delete_message_days: typing.Optional[int] = 1):
+        # Compruba si el usuario tiene permisos de administracion
+        if not interaction.user.guild_permissions.administrator:
+            await interaction.response.send_message("No tienes permisos para usar este comando.", ephemeral=True)
+            return
         try:
             # Banea al usuario
             if motivo is None:
@@ -99,6 +116,10 @@ class Moderation(commands.Cog):
     @app_commands.command(name='unban', description='Desbanea a un usuario')
     @commands.has_permissions(ban_members=True)
     async def unban_user(self, interaction: discord.Interaction, user: discord.User, motivo: typing.Optional[str] = None):
+        # Compruba si el usuario tiene permisos de administracion
+        if not interaction.user.guild_permissions.administrator:
+            await interaction.response.send_message("No tienes permisos para usar este comando.", ephemeral=True)
+            return
         try:
             # Desbanea al usuario
             if motivo is None:
@@ -116,6 +137,10 @@ class Moderation(commands.Cog):
     @app_commands.describe(user="Usuario a expulsar", motivo="Motivo de la expulsión")
     @commands.has_permissions(kick_members=True)
     async def kick_user(self, interaction: discord.Interaction, user: discord.Member, motivo: typing.Optional[str] = None):
+        # Compruba si el usuario tiene permisos de administracion
+        if not interaction.user.guild_permissions.administrator:
+            await interaction.response.send_message("No tienes permisos para usar este comando.", ephemeral=True)
+            return
         try:
             # Expulsa al usuario
             if motivo is None:
