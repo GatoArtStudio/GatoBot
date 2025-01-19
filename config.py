@@ -5,4 +5,3 @@ from dotenv import load_dotenv
 load_dotenv()
 
 TOKEN = os.environ.get("TOKEN")
-APIKEY_STEAM = os.environ.get("APIKEY_STEAM")
