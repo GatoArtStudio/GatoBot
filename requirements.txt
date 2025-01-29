@@ -5,3 +5,4 @@ yt-dlp>=2023.12.13
 ping3>=4.0.8
 discord-ext-voice-recv>=0.4.2a145
 colorlog>=6.9.0
+PyYAML>=6.0.2
