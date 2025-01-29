@@ -176,3 +176,4 @@ trusted_server_keys
 ffmpeg/
 temp_package
 recordings/
+ip_list.yaml

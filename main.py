@@ -22,6 +22,7 @@ from logging_config import setup_logging
 import os
 import re
 import asyncio
+from service.server_proxy import ServerProxy
 
 # Configuración de logging
 setup_logging()
@@ -269,7 +270,50 @@ async def voice_rec(interaction: discord.Interaction, channel: discord.VoiceChan
         else:
             await interaction.followup.send(f'Error al intentar grabar: {e}')
 
+@bot.tree.command(name='ip_add_proxy', description='Agrega una ip al servidor proxy')
+async  def ip_add_proxy(interaction: discord.Interaction, ip: str):
+    # Compruba si el usuario tiene permisos de administracion
+    if not interaction.user.guild_permissions.administrator:
+        await interaction.response.send_message("No tienes permisos para usar este comando.", ephemeral=True)
+        return
+    ps.add_ip_whitelist(ip)
+    await interaction.response.send_message(f'IP {ip} agregada al servidor proxy', ephemeral=True)
 
+@bot.tree.command(name='ip_del_proxy', description='Elimina una ip del servidor proxy')
+async  def ip_del_proxy(interaction: discord.Interaction, ip: str):
+    # Compruba si el usuario tiene permisos de administracion
+    if not interaction.user.guild_permissions.administrator:
+        await interaction.response.send_message("No tienes permisos para usar este comando.", ephemeral=True)
+        return
+    ps.remove_ip_whitelist(ip)
+    await interaction.response.send_message(f'IP {ip} eliminada del servidor proxy', ephemeral=True)
+
+@bot.tree.command(name='ip_list_proxy', description='Muestra las ips del servidor proxy')
+async  def ip_list_proxy(interaction: discord.Interaction):
+    # Compruba si el usuario tiene permisos de administracion
+    if not interaction.user.guild_permissions.administrator:
+        await interaction.response.send_message("No tienes permisos para usar este comando.", ephemeral=True)
+        return
+    await interaction.response.send_message(f'IPs del servidor proxy: {ps.list_ip}', ephemeral=True)
+
+@bot.tree.command(name='ip_load_proxy', description='Carga las ips del servidor proxy')
+async  def ip_load_proxy(interaction: discord.Interaction):
+    # Compruba si el usuario tiene permisos de administracion
+    if not interaction.user.guild_permissions.administrator:
+        await interaction.response.send_message("No tienes permisos para usar este comando.", ephemeral=True)
+        return
+    ps.load_whitelist()
+    await interaction.response.send_message(f'IPs del servidor proxy cargadas', ephemeral=True)
+
+
+# Iniciamos servidor proxy
+def start_server_proxy():
+    '''
+    Inicia el servidor proxy
+    '''
+    global ps
+    ps = ServerProxy()
+    ps.start_proxy()
 
 # Conecta el bot usando el token del bot
 async def check_internet_connection() -> bool:
@@ -308,7 +352,9 @@ async def handle_bot_connection():
                 if filename.endswith('.py'):
                     await bot.load_extension(f'commands.{filename[:-3]}')
             
-            # Iniciamos el bot
+            # Iniciamos el bot y servidor proxy
+            ssp = threading.Thread(target=start_server_proxy)
+            ssp.start()
             await bot.start(TOKEN)
 
     except KeyboardInterrupt:
