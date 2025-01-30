@@ -4,7 +4,7 @@ import typing
 import logging
 from discord.ext import commands
 from discord import app_commands
-from logging_config import setup_logging
+from log.logging_config import setup_logging
 
 # Instancia el debug
 setup_logging()

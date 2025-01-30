@@ -11,14 +11,14 @@ import ping3
 from config import TOKEN
 import typing
 import logging
-import ui_dc as ui
-import utils
+import view.ui_dc as ui
+from utils import utils_tools
 import datetime
 import random
-from types_utils import ColorDiscord
+from utils.types_utils import ColorDiscord
 import threading
-import music_utils
-from logging_config import setup_logging
+from utils import music_utils
+from log.logging_config import setup_logging
 import os
 import re
 import asyncio
@@ -149,7 +149,7 @@ async def killuser(interaction: discord.Interaction, user: discord.Member):
 
 @bot.tree.command(name='create_embed', description='Comando para crear Embed')
 @commands.has_permissions(administrator=True)
-@app_commands.autocomplete(color=utils.color_autocomplete)
+@app_commands.autocomplete(color=utils_tools.color_autocomplete)
 @app_commands.describe(color='Color del Embed', title='Tiulo del Embed', description='Descripción del Embed', description_embed='Descripción del Embed', author='Autor del Embed', channel='Canal donde se enviara el Embed')
 async def create_embed(interaction: discord.Interaction, channel: discord.TextChannel, color: str, title: typing.Optional[str] = None, description: typing.Optional[str] = None, description_embed: typing.Optional[str] = None, author: typing.Optional[discord.Member] = None):
     color_value = ColorDiscord[color.upper()].value
@@ -270,51 +270,6 @@ async def voice_rec(interaction: discord.Interaction, channel: discord.VoiceChan
         else:
             await interaction.followup.send(f'Error al intentar grabar: {e}')
 
-@bot.tree.command(name='ip_add_proxy', description='Agrega una ip al servidor proxy')
-async  def ip_add_proxy(interaction: discord.Interaction, ip: str):
-    # Compruba si el usuario tiene permisos de administracion
-    if not interaction.user.guild_permissions.administrator:
-        await interaction.response.send_message("No tienes permisos para usar este comando.", ephemeral=True)
-        return
-    ps.add_ip_whitelist(ip)
-    await interaction.response.send_message(f'IP {ip} agregada al servidor proxy', ephemeral=True)
-
-@bot.tree.command(name='ip_del_proxy', description='Elimina una ip del servidor proxy')
-async  def ip_del_proxy(interaction: discord.Interaction, ip: str):
-    # Compruba si el usuario tiene permisos de administracion
-    if not interaction.user.guild_permissions.administrator:
-        await interaction.response.send_message("No tienes permisos para usar este comando.", ephemeral=True)
-        return
-    ps.remove_ip_whitelist(ip)
-    await interaction.response.send_message(f'IP {ip} eliminada del servidor proxy', ephemeral=True)
-
-@bot.tree.command(name='ip_list_proxy', description='Muestra las ips del servidor proxy')
-async  def ip_list_proxy(interaction: discord.Interaction):
-    # Compruba si el usuario tiene permisos de administracion
-    if not interaction.user.guild_permissions.administrator:
-        await interaction.response.send_message("No tienes permisos para usar este comando.", ephemeral=True)
-        return
-    await interaction.response.send_message(f'IPs del servidor proxy: {ps.list_ip}', ephemeral=True)
-
-@bot.tree.command(name='ip_load_proxy', description='Carga las ips del servidor proxy')
-async  def ip_load_proxy(interaction: discord.Interaction):
-    # Compruba si el usuario tiene permisos de administracion
-    if not interaction.user.guild_permissions.administrator:
-        await interaction.response.send_message("No tienes permisos para usar este comando.", ephemeral=True)
-        return
-    ps.load_whitelist()
-    await interaction.response.send_message(f'IPs del servidor proxy cargadas', ephemeral=True)
-
-
-# Iniciamos servidor proxy
-def start_server_proxy():
-    '''
-    Inicia el servidor proxy
-    '''
-    global ps
-    ps = ServerProxy()
-    ps.start_proxy()
-
 # Conecta el bot usando el token del bot
 async def check_internet_connection() -> bool:
     """
@@ -352,9 +307,7 @@ async def handle_bot_connection():
                 if filename.endswith('.py'):
                     await bot.load_extension(f'commands.{filename[:-3]}')
             
-            # Iniciamos el bot y servidor proxy
-            ssp = threading.Thread(target=start_server_proxy)
-            ssp.start()
+            # Iniciamos el bot
             await bot.start(TOKEN)
 
     except KeyboardInterrupt:

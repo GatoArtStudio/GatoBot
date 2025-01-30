@@ -4,7 +4,7 @@ import socket
 import threading
 import select
 import logging
-from logging_config import setup_logging
+from log.logging_config import setup_logging
 from config import PORT_SERVER_PROXY
 
 # Instancia el debug
@@ -16,6 +16,8 @@ class ServerProxy:
         self.host = '0.0.0.0'
         self.port = int(PORT_SERVER_PROXY)
         self.buffer_size = 4096
+        self.server_socket = None
+        self.is_running = threading.Event()
         self.file_list_ip = 'ip_list.yaml'
         self.list_ip = None
         self.load_whitelist()
@@ -142,19 +144,29 @@ class ServerProxy:
         '''
         Iniciamos el servidor proxy
         '''
-        ss = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        ss.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         try:
-            ss.bind((self.host, self.port))
-            ss.listen(5)
+            self.server_socket.bind((self.host, self.port))
+            self.server_socket.listen(5)
             logger.info(f'proxy escuchando en {self.host}:{self.port}')
+            self.is_running.set()
         except Exception as e:
             logger.warning('Error al iniciar servidor proxy')
             logger.error(e)
             return
 
-        while True:
-            client_socket, client_address = ss.accept()
+        while self.is_running.is_set():
+            client_socket, client_address = self.server_socket.accept()
             logger.info(f"Conexion aceptada desde {client_address}")
             client_thread = threading.Thread(target=self.handle_client, args=(client_socket, client_address))
             client_thread.start()
+    
+    def stop_proxy(self):
+        '''
+        termina el servidor proxy
+        '''
+        self.is_running.clear()
+        if self.server_socket:
+            self.server_socket.close()
+            logger.info('proxy detenido')

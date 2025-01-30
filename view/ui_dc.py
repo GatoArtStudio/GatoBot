@@ -1,7 +1,7 @@
 import discord
 from discord.utils import MISSING
 import typing
-import music_utils
+import utils.music_utils
 
 class UIEMBED(discord.ui.Modal, title='Crea Embed'):
     title_input = discord.ui.TextInput(

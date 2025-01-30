@@ -1,7 +1,7 @@
 import discord
-from types_utils import ColorDiscord
+from utils.types_utils import ColorDiscord
 import logging
-from logging_config import setup_logging
+from log.logging_config import setup_logging
 
 # Instancia el debug
 setup_logging()

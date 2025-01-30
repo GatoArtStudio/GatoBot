@@ -1,10 +1,10 @@
 import discord
 import datetime
-import utils
+import utils.utils_tools as utils_tools
 from discord.ext import commands
-from types_utils import ColorDiscord
+from utils.types_utils import ColorDiscord
 import logging
-from logging_config import setup_logging
+from log.logging_config import setup_logging
 
 # Instancia el debug
 setup_logging()
@@ -61,7 +61,7 @@ class Messages(commands.Cog):
         # Verificamos si el usuario que envia el mensaje, intenta mensionar a todos los usuarios del servidor y si tiene permiso para el mismo
         if not message.author.guild_permissions.mention_everyone and '@everyone' in message.content:
             # Eliminamos el mensaje no autorizado
-            await utils.msg_del(message, logging, ColorDiscord.RED)
+            await utils_tools.msg_del(message, logging, ColorDiscord.RED)
             return True
         
         # Retornamos si ninguna de las siguientes condiciones se comple
