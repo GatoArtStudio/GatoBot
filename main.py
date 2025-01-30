@@ -23,6 +23,7 @@ import os
 import re
 import asyncio
 from service.server_proxy import ServerProxy
+from service.server_http import ServerHTTP
 
 # Configuración de logging
 setup_logging()
@@ -270,6 +271,14 @@ async def voice_rec(interaction: discord.Interaction, channel: discord.VoiceChan
         else:
             await interaction.followup.send(f'Error al intentar grabar: {e}')
 
+# inicia servidor http
+def start_server_http():
+    '''
+    Inicia el servidor http
+    '''
+    shttp = ServerHTTP()
+    shttp.start_server()
+
 # Conecta el bot usando el token del bot
 async def check_internet_connection() -> bool:
     """
@@ -306,6 +315,10 @@ async def handle_bot_connection():
             for filename in os.listdir('./commands'):
                 if filename.endswith('.py'):
                     await bot.load_extension(f'commands.{filename[:-3]}')
+            
+            # Iniciamos servidor http
+            servidor_http_thread = threading.Thread(target=start_server_http)
+            servidor_http_thread.start()
             
             # Iniciamos el bot
             await bot.start(TOKEN)
