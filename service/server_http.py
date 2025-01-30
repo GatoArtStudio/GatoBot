@@ -28,6 +28,8 @@ class ServerHTTP:
         self.load_users()
         self.failed_attempts = defaultdict(int)
         self.locked_accounts = {}
+        self.temp_links = {}
+        self.load_temp_links()
     
     def load_users(self):
         '''
@@ -39,6 +41,27 @@ class ServerHTTP:
                 self.users = d['users']
         except Exception as e:
             logger.error(f"Error loading users: {e}")
+
+    def load_temp_links(self):
+        '''
+        Carga los enlaces temporales desde un archivo
+        '''
+        try:
+            with open("temp_links.yaml", "r") as f:
+                self.temp_links = yaml.safe_load(f)
+        except Exception as e:
+            logger.error(f"Error loading temp links: {e}")
+            self.temp_links = {}
+    
+    def save_temp_links(self):
+        '''
+        Guarda los enlaces temporales en un archivo
+        '''
+        try:
+            with open("temp_links.yaml", "w") as f:
+                yaml.dump(self.temp_links, f)
+        except Exception as e:
+            logger.error(f"Error saving temp links: {e}")
     
     def setup_routes(self):
         '''
@@ -114,6 +137,40 @@ class ServerHTTP:
                 return FileResponse(str(file_path))
             else:
                 return {"message": "File not found"}
+        
+        @self.app.post("/generate_temp_link")
+        async def generate_temp_link(request: Request, filename: str = Form(...), duration: int = Form(...)):
+            session = request.cookies.get('session')
+            # verificamos si la sesión es valida
+            if session is None or session not in self.cookies:
+                return RedirectResponse(url="/", status_code=302)
+            
+            file_path = self.upload_dir / filename
+            if not file_path.is_file():
+                return RedirectResponse(url="/dashboard", status_code=302)
+            
+            temp_token = secrets.token_hex(16)
+            expiry_time = time.time() + duration * 60  # duración en minutos
+            self.temp_links[temp_token] = {"file": filename, "expires": expiry_time}
+            self.save_temp_links()
+            return {"temp_link": f"/temp_download/{temp_token}"}
+
+        @self.app.get("/temp_download/{temp_token}")
+        async def temp_download(temp_token: str):
+            if temp_token not in self.temp_links:
+                return {"message": "Invalid or expired link"}
+            
+            link_info = self.temp_links[temp_token]
+            if time.time() > link_info["expires"]:
+                del self.temp_links[temp_token]
+                self.save_temp_links()
+                return {"message": "Link expired"}
+            
+            file_path = self.upload_dir / link_info["file"]
+            if not file_path.is_file():
+                return {"message": "File not found"}
+            
+            return FileResponse(str(file_path))
 
 
     def start_server(self):

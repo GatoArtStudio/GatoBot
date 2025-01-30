@@ -181,3 +181,4 @@ users.yaml
 www/uploads/
 selfsigned.crt
 selfsigned.key
+temp_links.yaml

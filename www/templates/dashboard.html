@@ -22,6 +22,16 @@
                 </li>
             {% endfor %}
         </ul>
+
+        <!-- Formulario para generar enlaces temporales -->
+        <h3 class="temp-link-title">Generar Enlace Temporal</h3>
+        <form method="post" action="/generate_temp_link" class="temp-link-form">
+            <label for="filename">Nombre del archivo:</label>
+            <input id="filename" type="text" name="filename" required>
+            <label for="duration">Duración (minutos):</label>
+            <input id="duration" type="number" name="duration" required>
+            <button type="submit">Generar Enlace</button>
+        </form>
     </div>
 </body>
 </html>
