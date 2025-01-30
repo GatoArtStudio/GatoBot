@@ -179,3 +179,5 @@ recordings/
 ip_list.yaml
 users.yaml
 www/uploads/
+selfsigned.crt
+selfsigned.key

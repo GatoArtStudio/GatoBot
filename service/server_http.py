@@ -118,4 +118,10 @@ class ServerHTTP:
 
     def start_server(self):
         import uvicorn
-        uvicorn.run(self.app, host='0.0.0.0', port=int(PORT_SERVER_HTTP))
+        uvicorn.run(
+            self.app,
+            host='0.0.0.0',
+            port=int(PORT_SERVER_HTTP),
+            ssl_keyfile='selfsigned.key',
+            ssl_certfile='selfsigned.crt'
+        )
