@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="dashboard">
+        <h2>Panel de Archivos</h2>
+    
+        <!-- Formulario de subida -->
+        <form method="post" action="/upload" enctype="multipart/form-data" class="upload-form">
+            <input id="file-up" type="file" name="file" required>
+            <button type="submit">Subir</button>
+        </form>
+    
+        <h3 class="download-title">Archivos disponibles</h3>
+        <ul class="download-files">
+            {% for file in files %}
+                <li>
+                    <a href="/download/{{ file }}" class="download-link">{{ file }}</a>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+</body>
+</html>

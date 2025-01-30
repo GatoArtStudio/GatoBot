@@ -177,3 +177,5 @@ ffmpeg/
 temp_package
 recordings/
 ip_list.yaml
+users.yaml
+www/uploads/
