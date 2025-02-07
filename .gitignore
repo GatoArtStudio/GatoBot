@@ -179,6 +179,6 @@ recordings/
 ip_list.yaml
 users.yaml
 www/uploads/
-selfsigned.crt
-selfsigned.key
 temp_links.yaml
+cert.pem
+key.pem
