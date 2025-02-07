@@ -1,6 +1,7 @@
 import discord
 import logging
 import random
+import time
 from discord import ActivityType
 from discord.ext import commands, tasks
 from log.logging_config import setup_logging
@@ -15,16 +16,13 @@ class Presence(commands.Cog):
     '''
     def __init__(self, bot: commands.Bot):
         self.bot = bot
-        self.presence = self.getStatusRandom()
+        self.presence = self.getRandomActivity()
 
     @commands.Cog.listener()
     async def on_ready(self):
         '''
         Cambiamos la actividad del bot
         '''
-        # Cambiamos el estado del bot
-        await self.bot.change_presence(activity=discord.Activity(type=self.presence[1], name=self.presence[0]))
-        logger.info('Actividad del bot cambiada.')
 
         # Iniciamos el loop de cambio random de estado
         self.changePresence.start()
@@ -32,42 +30,112 @@ class Presence(commands.Cog):
 
     @tasks.loop(minutes=1.0)
     async def changePresence(self):
-        self.presence = self.getStatusRandom()
-        await self.bot.change_presence(activity=discord.Activity(type=self.presence[1], name=self.presence[0]))
+        self.presence = self.getRandomActivity()
+        await self.bot.change_presence(activity=self.presence)
     
-    def getStatusRandom(self):
+    def getRandomActivity(self):
         '''
         Obtiene un estado aleatorio
         '''
         states = [
             # Estados Jugando
-            ("Jugando al ajedrez con la CPU", ActivityType.playing),
-            ("Explorando mundos desconocidos", ActivityType.playing),
-            ("Configurando servidores mágicos", ActivityType.playing),
+            discord.Game(
+                name="Jugando al ajedrez con la CPU"
+            ),
+            discord.Game(
+                name="Explorando mundos desconocidos"
+            ),
+            discord.Game(
+                name="Configurando servidores mágicos"
+            ),
 
             # Estados Escuchando
-            ("Escuchando tus comandos", ActivityType.listening),
-            ("Interpretando sugerencias", ActivityType.listening),
-            ("Spotify: Canción favorita del año", ActivityType.listening),
+            discord.Activity(
+                type=ActivityType.listening,
+                name="Escuchando tus comandos",
+                state="desarrollador: https://gatoartstudio.art/redes/"
+            ),
+            discord.Activity(
+                type=ActivityType.listening,
+                name="Interpretando sugerencias",
+                state="desarrollador: https://gatoartstudio.art/redes/"
+            ),
+            discord.Activity(
+                type=ActivityType.listening,
+                name="Spotify: Canción favorita del año",
+                state="desarrollador: https://gatoartstudio.art/redes/"
+            ),
 
             # Estados Viendo
-            ("Observando la actividad del servidor", ActivityType.watching),
-            ("Recolectando estadísticas", ActivityType.watching),
-            ("Mirando el flujo de datos", ActivityType.watching),
-            ("¡Qué increíble! Míralo tú mismo en: https://gatoartstudios.github.io/redes", ActivityType.watching),
+            discord.Activity(
+                type=ActivityType.watching,
+                name="Observando la actividad del servidor",
+                state="desarrollador: https://gatoartstudio.art/redes/"
+            ),
+            discord.Activity(
+                type=ActivityType.watching,
+                name="Recolectando estadísticas",
+                state="desarrollador: https://gatoartstudio.art/redes/"
+            ),
+            discord.Activity(
+                type=ActivityType.watching,
+                name="Mirando el flujo de datos",
+                state="desarrollador: https://gatoartstudio.art/redes/"
+            ),
+            discord.Streaming(
+                name="GatoArtStudio",
+                details="¡Qué increíble!",
+                url="https://gatoartstudio.art/redes/"
+            ),
 
             # Estados Compitiendo
-            ("Compitiendo por el bot más útil", ActivityType.competing),
-            ("En una carrera de programación", ActivityType.competing),
-            ("Contra los límites del tiempo de respuesta", ActivityType.competing),
-            ("Protegiendo el servidor contra tus travesuras", ActivityType.competing),
-            ("¿Quieres salir en esta actividad publicitaria de forma gratuita? Escríbele a @GatoArtStudio.", ActivityType.competing),
+            discord.Activity(
+                type=ActivityType.competing,
+                name="Compitiendo por el bot más útil",
+                state="desarrollador: https://gatoartstudio.art/redes/"
+            ),
+            discord.Activity(
+                type=ActivityType.competing,
+                name="En una carrera de programación",
+                state="desarrollador: https://gatoartstudio.art/redes/"
+            ),
+            discord.Activity(
+                type=ActivityType.competing,
+                name="Contra los límites del tiempo de respuesta",
+                state="desarrollador: https://gatoartstudio.art/redes/"
+            ),
+            discord.Activity(
+                type=ActivityType.competing,
+                name="Protegiendo el servidor contra tus travesuras",
+                state="desarrollador: https://gatoartstudio.art/redes/"
+            ),
+            discord.Streaming(
+                name="GatoArtStudio",
+                details="¿Quieres salir en esta actividad publicitaria de forma gratuita?, dale a Ver!!",
+                url="https://gatoartstudio.art/redes/"
+            ),
 
             # Estados de Streaming
-            ("AnamanaCass esta haciendo mamadas! | twitch: anamanacass", ActivityType.streaming),
-            ("Th3VoiDLive cuidando unos gatitos tikitos! | twitch: th3voidlive", ActivityType.streaming),
-            ("EriPhantomhive te dice: hola po! | twitch: eriphantomhive", ActivityType.streaming),
-            ("Bueno Bueno Bueno Chicos... Leyenda del streming B) | twitch: alascr29", ActivityType.streaming)
+            discord.Streaming(
+                name="anamanacass",
+                details="AnamanaCass esta haciendo mamadas!",
+                url="https://www.twitch.tv/anamanacass"
+            ),
+            discord.Streaming(
+                name="th3voidlive",
+                details="Th3VoiDLive cuidando unos gatitos tikitos!",
+                url="https://www.twitch.tv/th3voidlive"
+            ),
+            discord.Streaming(
+                name="eriphantomhive",
+                details="EriPhantomhive te dice: hola po!",
+                url="https://www.twitch.tv/eriphantomhive"
+            ),
+            discord.Streaming(
+                name="alascr29",
+                details="Bueno Bueno Bueno Chicos... Leyenda del streming B)",
+                url="https://www.twitch.tv/alascr29"
+            )
         ]
         
         # Retornamos un estados aleatorio
@@ -75,7 +143,7 @@ class Presence(commands.Cog):
 
 
 async def setup(bot):
-    '''
+    """
     Agrega el cog al bot
-    '''
+    """
     await bot.add_cog(Presence(bot))
