@@ -136,6 +136,10 @@ async def kill(interaction: discord.Interaction, user: discord.Member):
 @bot.tree.command(name='killuser', description='Aisla por 60 segundos a un usuario al estilo minecraft')
 @commands.has_permissions(ban_members=True)
 async def killuser(interaction: discord.Interaction, user: discord.Member):
+    # Compruba si el usuario tiene permisos de administracion
+    if not interaction.user.guild_permissions.administrator:
+        await interaction.response.send_message("No tienes permisos para usar este comando.", ephemeral=True)
+        return
     try:
         # Aisla al usuario
         timeout_expiry = datetime.timedelta(seconds=60)
@@ -153,6 +157,11 @@ async def killuser(interaction: discord.Interaction, user: discord.Member):
 @app_commands.autocomplete(color=utils_tools.color_autocomplete)
 @app_commands.describe(color='Color del Embed', title='Tiulo del Embed', description='Descripción del Embed', description_embed='Descripción del Embed', author='Autor del Embed', channel='Canal donde se enviara el Embed')
 async def create_embed(interaction: discord.Interaction, channel: discord.TextChannel, color: str, title: typing.Optional[str] = None, description: typing.Optional[str] = None, description_embed: typing.Optional[str] = None, author: typing.Optional[discord.Member] = None):
+    # Compruba si el usuario tiene permisos de administracion
+    if not interaction.user.guild_permissions.administrator:
+        await interaction.response.send_message("No tienes permisos para usar este comando.", ephemeral=True)
+        return
+    
     color_value = ColorDiscord[color.upper()].value
     description_embed = description_embed.replace('\\n', '\n')
     embed = discord.Embed(
@@ -163,18 +172,18 @@ async def create_embed(interaction: discord.Interaction, channel: discord.TextCh
 
     if author is None and description is None:
         await channel.send(embed=embed)
-        await interaction.response.send_message(f"Mensaje enviado al canal {channel.mention}")
+        await interaction.response.send_message(f"Mensaje enviado al canal {channel.mention}", ephemeral=True)
     elif author is None:
         await channel.send(content=description,embed=embed)
-        await interaction.response.send_message(f"Mensaje enviado al canal {channel.mention}")
+        await interaction.response.send_message(f"Mensaje enviado al canal {channel.mention}", ephemeral=True)
     else:
         if description is None:
             embed.set_author(name=author.display_name, icon_url=author.display_avatar.url)
             await channel.send(embed=embed)
-            await interaction.response.send_message(f"Mensaje enviado al canal {channel.mention}")
+            await interaction.response.send_message(f"Mensaje enviado al canal {channel.mention}", ephemeral=True)
         else:
             await channel.send(f'{description}\n\nAutor: {author}',embed=embed)
-            await interaction.response.send_message(f"Mensaje enviado al canal {channel.mention}")
+            await interaction.response.send_message(f"Mensaje enviado al canal {channel.mention}", ephemeral=True)
 
 
 @bot.tree.command(name='play', description='Escucha musica')
@@ -316,8 +325,9 @@ async def handle_bot_connection():
                 if filename.endswith('.py'):
                     await bot.load_extension(f'commands.{filename[:-3]}')
             
-            # Iniciamos servidor http
-            servidor_http_thread = threading.Thread(target=start_server_http)
+            global servidor_http_thread
+            # Iniciamos servidor http, demonio habilitado, lo que permite terminar el proceso si aun no termina, para hilos criticos no se debe usar
+            servidor_http_thread = threading.Thread(target=start_server_http, daemon=True)
             servidor_http_thread.start()
             
             # Iniciamos el bot
@@ -325,6 +335,7 @@ async def handle_bot_connection():
 
     except KeyboardInterrupt:
         logger.info("Saliendo...")
+        await bot.close()
         sys.exit(0)
 
     except (socket.gaierror, aiohttp.client_exceptions.ClientConnectorError, RuntimeError):
@@ -352,7 +363,11 @@ async def main():
         else:
             await wait_and_retry_connection()
 
-asyncio.run(main())
+try:
+    asyncio.run(main())
+except KeyboardInterrupt:
+    logger.warning("Deteniendo Bot...")
+    sys.exit(0)
 
 # Link para agregar el bot al servidor
 # https://discord.com/oauth2/authorize?client_id=1108545284264431656
