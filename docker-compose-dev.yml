@@ -1,0 +1,11 @@
+services:
+  gatobot:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    ports:
+      - "25978:25978"
+      - "26206:26206"
+    env_file: ".env"
+    volumes:
+      - .:/app
