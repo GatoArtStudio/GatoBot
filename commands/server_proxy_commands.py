@@ -71,7 +71,7 @@ class ServerProxyCommands(commands.Cog):
             return
         if self.ps is None or not self.ps.is_running:
             # Iniciamos el hilo del servidor proxy
-            self.servidor_proxy_thread = threading.Thread(target=self.start_server_proxy)
+            self.servidor_proxy_thread = threading.Thread(target=self.start_server_proxy, daemon=True)
             self.servidor_proxy_thread.start()
             await interaction.response.send_message(f'Servidor proxy iniciado', ephemeral=True)
         else:
