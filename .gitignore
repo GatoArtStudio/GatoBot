@@ -182,3 +182,4 @@ www/uploads/
 temp_links.yaml
 cert.pem
 key.pem
+cloudflared-linux-amd64

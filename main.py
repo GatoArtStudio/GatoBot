@@ -20,6 +20,7 @@ import os
 import re
 import asyncio
 from service.server_http import ServerHTTP
+from service.cloudflare_tunnel import start_cloudflare_tunnel
 
 # Configuración de logging
 logger = Logger().get_logger()
@@ -324,6 +325,9 @@ async def handle_bot_connection():
             # Iniciamos servidor http, demonio habilitado, lo que permite terminar el proceso si aun no termina, para hilos criticos no se debe usar
             servidor_http_thread = threading.Thread(target=start_server_http, daemon=True)
             servidor_http_thread.start()
+
+            # Iniciamos el túnel de Cloudflare
+            start_cloudflare_tunnel()
             
             # Iniciamos el bot
             await bot.start(TOKEN)
