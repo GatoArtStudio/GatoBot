@@ -1,11 +1,9 @@
 import discord
-from utils.types_utils import ColorDiscord
-import logging
-from log.logging_config import setup_logging
+from utils.colors import ColorDiscord
+from log.logging_config import Logger
 
 # Instancia el debug
-setup_logging()
-logger = logging.getLogger(__name__)
+logger = Logger().get_logger()
 
 async def color_autocomplete(interaction: discord.Interaction, current: str):
     color_names = [color.name.lower() for color in ColorDiscord]

@@ -6,11 +6,8 @@ from discord import app_commands
 import socket
 import aiohttp
 from aiohttp import client_exceptions
-import time
-import ping3
 from config import TOKEN
 import typing
-import logging
 import view.ui_dc as ui
 from utils import utils_tools
 import datetime
@@ -18,16 +15,14 @@ import random
 from utils.types_utils import ColorDiscord
 import threading
 from utils import music_utils
-from log.logging_config import setup_logging
+from log import Logger
 import os
 import re
 import asyncio
-from service.server_proxy import ServerProxy
 from service.server_http import ServerHTTP
 
 # Configuración de logging
-setup_logging()
-logger = logging.getLogger(__name__)
+logger = Logger().get_logger()
 
 # Clases
 

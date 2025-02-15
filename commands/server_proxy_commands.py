@@ -1,13 +1,13 @@
 import discord
-import logging
 import threading
 from discord.ext import commands
 from discord import app_commands
-from log.logging_config import setup_logging
+from discord.app_commands.checks import has_permissions, bot_has_permissions
+from log.logging_config import Logger
 from service.server_proxy import ServerProxy
 
-setup_logging()
-logger = logging.getLogger(__name__)
+# Instancia el debug
+logger = Logger().get_logger()
 
 class ServerProxyCommands(commands.Cog):
     def __init__(self, bot: commands.Bot):
@@ -16,11 +16,9 @@ class ServerProxyCommands(commands.Cog):
         self.servidor_proxy_thread = None
 
     @app_commands.command(name='ip_add_proxy', description='Agrega una ip al servidor proxy')
+    @has_permissions(administrator=True) # Verifica que el usuario tenga permisos de administrador
     async  def ip_add_proxy(self, interaction: discord.Interaction, ip: str):
-        # Compruba si el usuario tiene permisos de administracion
-        if not interaction.user.guild_permissions.administrator:
-            await interaction.response.send_message("No tienes permisos para usar este comando.", ephemeral=True)
-            return
+
         if self.ps is None:
             await interaction.response.send_message("El servidor proxy no esta iniciado.", ephemeral=True)
             return
@@ -28,12 +26,9 @@ class ServerProxyCommands(commands.Cog):
         await interaction.response.send_message(f'IP {ip} agregada al servidor proxy', ephemeral=True)
 
     @app_commands.command(name='ip_del_proxy', description='Elimina una ip del servidor proxy')
-    @commands.has_permissions(administrator=True)
+    @has_permissions(administrator=True) # Verifica que el usuario tenga permisos de administrador
     async  def ip_del_proxy(self, interaction: discord.Interaction, ip: str):
-        # Compruba si el usuario tiene permisos de administracion
-        if not interaction.user.guild_permissions.administrator:
-            await interaction.response.send_message("No tienes permisos para usar este comando.", ephemeral=True)
-            return
+
         if self.ps is None:
             await interaction.response.send_message("El servidor proxy no esta iniciado.", ephemeral=True)
             return
@@ -41,22 +36,18 @@ class ServerProxyCommands(commands.Cog):
         await interaction.response.send_message(f'IP {ip} eliminada del servidor proxy', ephemeral=True)
 
     @app_commands.command(name='ip_list_proxy', description='Muestra las ips del servidor proxy')
+    @has_permissions(administrator=True) # Verifica que el usuario tenga permisos de administrador
     async  def ip_list_proxy(self, interaction: discord.Interaction):
-        # Compruba si el usuario tiene permisos de administracion
-        if not interaction.user.guild_permissions.administrator:
-            await interaction.response.send_message("No tienes permisos para usar este comando.", ephemeral=True)
-            return
+
         if self.ps is None:
             await interaction.response.send_message("El servidor proxy no esta iniciado.", ephemeral=True)
             return
         await interaction.response.send_message(f'IPs del servidor proxy: {self.ps.list_ip}', ephemeral=True)
 
     @app_commands.command(name='ip_load_proxy', description='Carga las ips del servidor proxy')
+    @has_permissions(administrator=True) # Verifica que el usuario tenga permisos de administrador
     async  def ip_load_proxy(self, interaction: discord.Interaction):
-        # Compruba si el usuario tiene permisos de administracion
-        if not interaction.user.guild_permissions.administrator:
-            await interaction.response.send_message("No tienes permisos para usar este comando.", ephemeral=True)
-            return
+
         if self.ps is None:
             await interaction.response.send_message("El servidor proxy no esta iniciado.", ephemeral=True)
             return
@@ -64,11 +55,9 @@ class ServerProxyCommands(commands.Cog):
         await interaction.response.send_message(f'IPs del servidor proxy cargadas', ephemeral=True)
 
     @app_commands.command(name='start_server_proxy', description='inicia el servidor proxy')
+    @has_permissions(administrator=True) # Verifica que el usuario tenga permisos de administrador
     async  def start_server_p(self, interaction: discord.Interaction):
-        # Compruba si el usuario tiene permisos de administracion
-        if not interaction.user.guild_permissions.administrator:
-            await interaction.response.send_message("No tienes permisos para usar este comando.", ephemeral=True)
-            return
+
         if self.ps is None or not self.ps.is_running:
             # Iniciamos el hilo del servidor proxy
             self.servidor_proxy_thread = threading.Thread(target=self.start_server_proxy, daemon=True)
@@ -78,11 +67,9 @@ class ServerProxyCommands(commands.Cog):
             await interaction.response.send_message(f'Servidor proxy ya iniciado', ephemeral=True)
 
     @app_commands.command(name='stop_server_proxy', description='Detiene el servidor proxy')
+    @has_permissions(administrator=True) # Verifica que el usuario tenga permisos de administrador
     async  def stop_server_P(self, interaction: discord.Interaction):
-        # Compruba si el usuario tiene permisos de administracion
-        if not interaction.user.guild_permissions.administrator:
-            await interaction.response.send_message("No tienes permisos para usar este comando.", ephemeral=True)
-            return
+
         if self.ps is not None and self.ps.is_running:
             await interaction.response.defer(ephemeral=True)
             try:

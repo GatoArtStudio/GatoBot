@@ -1,14 +1,13 @@
 import discord
 import datetime
 import typing
-import logging
 from discord.ext import commands
 from discord import app_commands
-from log.logging_config import setup_logging
+from discord.app_commands.checks import has_permissions, bot_has_permissions
+from log.logging_config import Logger
 
 # Instancia el debug
-setup_logging()
-logger = logging.getLogger(__name__)
+logger = Logger().get_logger()
 
 class Moderation(commands.Cog):
     '''
@@ -17,11 +16,8 @@ class Moderation(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
     
-
-
-    
     @app_commands.command(name='purge', description='Elimina los mensajes de un usuario en las ultimas horas.')
-    @commands.has_permissions(administrator=True)
+    @has_permissions(administrator=True) # Verifica que el usuario tenga permisos de administrador
     async def purge_user(self, interaction: discord.Interaction, user: discord.Member, horas: typing.Literal[7, 24, 48, 72] = 24) -> None:
         """Elimina los mensajes de un usuario en las ultimas horas.
 
@@ -33,10 +29,7 @@ class Moderation(commands.Cog):
         Returns:
             None
         """
-        # Compruba si el usuario tiene permisos de administracion
-        if not interaction.user.guild_permissions.administrator:
-            await interaction.response.send_message("No tienes permisos para usar este comando.", ephemeral=True)
-            return
+
         
         now = datetime.datetime.now(datetime.timezone.utc)
         time_limit = now - datetime.timedelta(hours=horas)
@@ -59,12 +52,9 @@ class Moderation(commands.Cog):
         )
     
     @app_commands.command(name='timeout', description='Aisla por x numero de minutos')
-    @commands.has_permissions(ban_members=True)
+    @has_permissions(administrator=True) # Verifica que el usuario tenga permisos de administrador
     async def timeout_user(self, interaction: discord.Interaction, user: discord.Member, minutos: int = 5):
-        # Compruba si el usuario tiene permisos de administracion
-        if not interaction.user.guild_permissions.administrator:
-            await interaction.response.send_message("No tienes permisos para usar este comando.", ephemeral=True)
-            return
+
         try:
             # Aisla al usuario
             timeout_expiry = datetime.timedelta(minutes=minutos)
@@ -77,12 +67,9 @@ class Moderation(commands.Cog):
             await interaction.response.send_message(f"Ocurrió un error al intentar aislar al usuario: {user.mention}, error: {e}", ephemeral=True)
 
     @app_commands.command(name='untimeout', description='Desaisla a un usuario')
-    @commands.has_permissions(ban_members=True)
+    @has_permissions(administrator=True) # Verifica que el usuario tenga permisos de administrador
     async def untimeout_user(self, interaction: discord.Interaction, user: discord.Member):
-        # Compruba si el usuario tiene permisos de administracion
-        if not interaction.user.guild_permissions.administrator:
-            await interaction.response.send_message("No tienes permisos para usar este comando.", ephemeral=True)
-            return
+
         try:
             # Desaisla al usuario
             await user.timeout(None)
@@ -94,12 +81,9 @@ class Moderation(commands.Cog):
             await interaction.response.send_message(f"Ocurrió un error al intentar desaislar al usuario: {user.mention}, error: {e}", ephemeral=True)
     
     @app_commands.command(name='ban', description='Banea a un usuario')
-    @commands.has_permissions(ban_members=True)
+    @has_permissions(administrator=True) # Verifica que el usuario tenga permisos de administrador
     async def ban_user(self, interaction: discord.Interaction, user: discord.Member, motivo: typing.Optional[str] = None, delete_message_days: typing.Optional[int] = 1):
-        # Compruba si el usuario tiene permisos de administracion
-        if not interaction.user.guild_permissions.administrator:
-            await interaction.response.send_message("No tienes permisos para usar este comando.", ephemeral=True)
-            return
+
         try:
             # Banea al usuario
             if motivo is None:
@@ -114,12 +98,9 @@ class Moderation(commands.Cog):
             await interaction.response.send_message(f"Ocurrio un error al intentar banear al usuario: {user.mention}, error: {e}", ephemeral=True)
     
     @app_commands.command(name='unban', description='Desbanea a un usuario')
-    @commands.has_permissions(ban_members=True)
+    @has_permissions(administrator=True) # Verifica que el usuario tenga permisos de administrador
     async def unban_user(self, interaction: discord.Interaction, user: discord.User, motivo: typing.Optional[str] = None):
-        # Compruba si el usuario tiene permisos de administracion
-        if not interaction.user.guild_permissions.administrator:
-            await interaction.response.send_message("No tienes permisos para usar este comando.", ephemeral=True)
-            return
+
         try:
             # Desbanea al usuario
             if motivo is None:
@@ -135,12 +116,9 @@ class Moderation(commands.Cog):
     
     @app_commands.command(name='kick', description='Expulsa a un usuario')
     @app_commands.describe(user="Usuario a expulsar", motivo="Motivo de la expulsión")
-    @commands.has_permissions(kick_members=True)
+    @has_permissions(administrator=True) # Verifica que el usuario tenga permisos de administrador
     async def kick_user(self, interaction: discord.Interaction, user: discord.Member, motivo: typing.Optional[str] = None):
-        # Compruba si el usuario tiene permisos de administracion
-        if not interaction.user.guild_permissions.administrator:
-            await interaction.response.send_message("No tienes permisos para usar este comando.", ephemeral=True)
-            return
+
         try:
             # Expulsa al usuario
             if motivo is None:
@@ -154,10 +132,7 @@ class Moderation(commands.Cog):
         except discord.HTTPException as e:
             await interaction.response.send_message(f"Ocurrio un error al intentar expulsar al usuario: {user.mention}, error: {e}", ephemeral=True)
 
-
-
-
-async def setup(bot):
+async def setup(bot: commands.Bot):
     '''
     Agrega el cog al bot
     '''

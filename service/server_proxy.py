@@ -3,13 +3,11 @@ import yaml
 import socket
 import threading
 import select
-import logging
-from log.logging_config import setup_logging
+from log.logging_config import Logger
 from config import PORT_SERVER_PROXY
 
 # Instancia el debug
-setup_logging()
-logger = logging.getLogger(__name__)
+logger = Logger().get_logger()
 
 class ServerProxy:
     def __init__(self):
@@ -59,7 +57,7 @@ class ServerProxy:
                         else:
                             client_socket.sendall(data)
             except Exception as e:
-                logging.error(f"Error en la conexión HTTPS: {e}")
+                logger.error(f"Error en la conexión HTTPS: {e}")
             finally:
                 remote_socket.close()
                 client_socket.close()
@@ -97,7 +95,7 @@ class ServerProxy:
                     else:
                         break
             except Exception as e:
-                logging.error(f"Error en la conexión HTTP: {e}")
+                logger.error(f"Error en la conexión HTTP: {e}")
             finally:
                 remote_socket.close()
                 client_socket.close()

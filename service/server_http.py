@@ -1,6 +1,5 @@
 import yaml
 import time
-import logging
 import secrets
 from pathlib import Path
 from collections import defaultdict
@@ -8,12 +7,11 @@ from fastapi import FastAPI, Request, Form, UploadFile, File, Depends, Response
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import RedirectResponse, FileResponse
-from log.logging_config import setup_logging
+from log.logging_config import Logger
 from config import PORT_SERVER_HTTP
 
 # Instancia el debug
-setup_logging()
-logger = logging.getLogger(__name__)
+logger = Logger().get_logger()
 
 class ServerHTTP:
     def __init__(self):

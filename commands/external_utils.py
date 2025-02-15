@@ -1,17 +1,13 @@
 import discord
-import logging
 import typing
-import threading
 from discord.ext import commands
 from discord import app_commands
-from log.logging_config import setup_logging
-from service.server_proxy import ServerProxy
+from log.logging_config import Logger
 from config import USER_DEV_ID
-from utils import ColorDiscord
+from utils.colors import ColorDiscord
 
-setup_logging()
-logger = logging.getLogger(__name__)
-
+# Instancia el debug
+logger = Logger().get_logger()
 
 class ExternalUtils(commands.Cog):
     def __init__(self, bot: commands.Bot):

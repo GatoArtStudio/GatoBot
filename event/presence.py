@@ -1,14 +1,11 @@
 import discord
-import logging
 import random
-import time
 from discord import ActivityType
 from discord.ext import commands, tasks
-from log.logging_config import setup_logging
+from log.logging_config import Logger
 
 # Instancia el debug
-setup_logging()
-logger = logging.getLogger(__name__)
+logger = Logger().get_logger()
 
 class Presence(commands.Cog):
     '''

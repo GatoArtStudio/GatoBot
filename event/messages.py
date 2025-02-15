@@ -1,21 +1,14 @@
 import discord
 import datetime
-import time
-import utils.utils_tools as utils_tools
 from discord.ext import commands
-from utils.types_utils import ColorDiscord
-from collections import defaultdict
-import logging
-from log.logging_config import setup_logging
+from log.logging_config import Logger
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.pipeline import make_pipeline
-import numpy as np
 from config import WORKING_MODE, SERVER_DEV_ID
 
 # Instancia el debug
-setup_logging()
-logger = logging.getLogger(__name__)
+logger = Logger().get_logger()
 
 class Messages(commands.Cog):
     '''
@@ -49,9 +42,10 @@ class Messages(commands.Cog):
             message (discord.Message): El mensaje que se ha recibido.
         '''
 
-        if WORKING_MODE == 'dev' and message.guild.id == int(SERVER_DEV_ID):
-            await self.handle_is_spam(message=message)
-            return
+        if message.guild:
+            if WORKING_MODE == 'dev' and message.guild.id == int(SERVER_DEV_ID):
+                await self.handle_is_spam(message=message)
+                return
 
 
         # Verifica que el autor del mensaje no sea el bot / administrador / o mencionar a @everyone
@@ -123,46 +117,13 @@ class Messages(commands.Cog):
         # Retornamos si ninguna de las siguientes condiciones se comple
         return False
 
-    async def handle_spam_links(self, message: discord.Message):
-        '''
-        Verifica si hay spam de una cuenta comprometida
-        '''
-
-        # Verificamos si el mensaje incluye este contenido que es usual en cuantas comprometidas
-        if '[steamcommunity.com/' in message.content:
-            # Eliminamos el mensaje de la cuenta comprometida
-            await message.delete()
-
-            try:
-                # Establecemos un timestap para el timeout
-                timeout_expiry = datetime.timedelta(
-                    seconds=self.TIMEOUT_SECONDS
-                )
-
-                # Aplicamos el respectivo TimeOut al usuario comprometido
-                await message.author.timeout(
-                    timeout_expiry,
-                    reason="Aislado por 60 segundos, por enviar link engañoso de steam"
-                )
-
-                # Mostramos en el debug un warn sobre la cuenta comprometida
-                logger.warning(
-                    f'El usuario: {message.author.display_name}, ID: {message.author.id} Esta haciendo spam, mensaje: {message.content}'
-                )
-
-            # Si hay un error durante la sancion al usuario
-            except (discord.Forbidden, discord.HTTPException) as e:
-
-                # Notificamos que hubo un error a la consola
-                logger.error(f"No tengo permisos para aislar a este usuario o ocurrió un error: {e}")
-
     def train_model_spam(self):
         '''
         Entrenamiento del modelo
         '''
 
         messages = [
-                "steam gift 50$ - [steamcommunity.com/gift-card/pay/50]( )@everyone",
+                "steam gift 50$ - [steamcommunity.com/gift-card/pay/50](https://)@everyone",
                 "Haz clic aquí para reclamar tu premio",
                 "Invierte en criptomonedas y hazte rico",
                 "Únete a nuestro grupo y obtén recompensas",
@@ -174,12 +135,15 @@ class Messages(commands.Cog):
                 "Compra seguidores para tu cuenta, escribeme al dm",
                 "Compra seguidores para tu cuenta",
                 "Llámame cuando puedas",
+                "@everyone steam gift 50$ - [steamcommunity.com/gift-card/pay/50](https://)",
+                "50$ gift https://steamuconmmunity.com/s/10329209416",
+                "50$ steam gift - https://"
             ]
         labels = [
                 "spam", "no_spam", "no_spam", "no_spam", "no_spam",
-                "no_spam", "no_spam", "spam", "no_spam", "spam", "no_spam", "no_spam"
+                "no_spam", "no_spam", "spam", "no_spam", "spam", "no_spam", "no_spam", "spam", "spam", "spam"
             ]
-
+        
         # Convertimos los mensajes a una array 2d
         # messages = np.array(messages).reshape(-1, 1)
         
