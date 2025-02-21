@@ -58,9 +58,15 @@ class MembersUtils(commands.Cog):
             if not voice_channel:
                 await interaction.followup.send("Debes estar en un canal de voz para usar este comando", ephemeral=True)
                 return
+
+            # Verificar permisos del usuario en el canal de voz
+            permissions = voice_channel.permissions_for(interaction.user)
+            if not permissions.send_tts_messages:
+                await interaction.followup.send("No tienes permisos para usar TTS en este canal de voz.", ephemeral=True)
+                return
             
             # Agrega el mensaje a la cola
-            self.add_to_queue(interaction, message)
+            self.add_to_queue(interaction, f'{interaction.user.name}, {message}')
 
         except Exception as e:
             logger.error(f"Error al enviar el mensaje: {e}")
@@ -85,6 +91,9 @@ class MembersUtils(commands.Cog):
                 if voice_client is not None:
                     await voice_client.disconnect()
                 voice_client = await interaction.user.voice.channel.connect()
+
+                # Esperamos un monento para que se conecte
+                await asyncio.sleep(1)
 
             # Reproducir el archivo de audio
             voice_client.play(discord.FFmpegPCMAudio(f"{self.dir_tmp}/{interaction.user.id}_tts.mp3"), after=lambda e: self.bot.loop.create_task(self.on_audio_complete()))
