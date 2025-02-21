@@ -58,13 +58,16 @@ async def play_music(ctx: discord.Interaction):
 
         m_url = music_queue[0][0]['source']
         #try to connect to voice channel if you are not already connected
-        if vc == None or not vc.is_connected():
-            vc = await music_queue[0][1].connect()
+        if vc is None or not vc.is_connected():
+            try:
+                vc = await music_queue[0][1].connect()
 
-            #in case we fail to connect
-            if vc == None:
-                await ctx.followup.send("```No se pudo conectar al canal de voz```")
-                return
+                #in case we fail to connect
+                if vc == None:
+                    await ctx.followup.send("```No se pudo conectar al canal de voz```")
+                    return
+            except discord.errors.ClientException:
+                await ctx.followup.send("```Ya estoy en un canal de voz```")
         else:
             await vc.move_to(music_queue[0][1])
         #remove the first element as you are currently playing it
