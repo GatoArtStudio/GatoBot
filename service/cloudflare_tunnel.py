@@ -1,6 +1,6 @@
 import os
 import subprocess
-from config import TOKEN_CLOUDFLARE
+from config import TOKEN_CLOUDFLARE, WORKING_MODE
 from log.logging_config import Logger
 
 # Instancia el debug
@@ -10,6 +10,10 @@ def start_cloudflare_tunnel():
     """
     Inicia el túnel de Cloudflare usando el binario portable.
     """
+
+    if WORKING_MODE != 'production':
+        logger.info("El bot no está en modo producción, el túnel de Cloudflare no se iniciará.")
+        return
 
     if not os.path.isfile('./cloudflared-linux-amd64'):
         logger.error("El binario portable de Cloudflare no fue encontrado.")

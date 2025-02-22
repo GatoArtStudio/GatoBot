@@ -132,6 +132,50 @@ class Moderation(commands.Cog):
         except discord.HTTPException as e:
             await interaction.response.send_message(f"Ocurrio un error al intentar expulsar al usuario: {user.mention}, error: {e}", ephemeral=True)
 
+    @app_commands.command(name='setup_security', description='Configura el servidor con unas configuraciones pre-configuradas, mas informacion en la web del bot.')
+    @has_permissions(administrator=True) # Verifica que el usuario tenga permisos de administrador
+    async def setup_security(self, interaction: discord.Interaction, hidden: bool = False):
+
+        await interaction.response.defer(ephemeral=hidden)
+
+        guild = interaction.guild
+        roles_modified = []
+        count = 0
+
+        for role in guild.roles:
+            if not role.permissions.administrator:
+                try:
+                    new_perms = role.permissions
+                    new_perms.update(
+                        use_external_apps=False,
+                        manage_webhooks=False,
+                        mention_everyone=False
+                    )
+
+                    await role.edit(permissions=new_perms)
+                    roles_modified.append(role.mention)
+                    count += 1
+
+                except Exception as e:
+                    logger.error(f"Error al intentar modificar los permisos del rol {role.name}: {e}")
+                    continue
+        
+        embed = discord.Embed(
+            title="Configuración de seguridad",
+            description=f"Se han modificado los permisos de {count} roles en el servidor.",
+            color=discord.Color.green()
+        )
+
+        embed.add_field(name="Roles modificados", value=", ".join(roles_modified), inline=False)
+        embed.add_field(name="Permisos modificados", value="`use_external_apps`, `manage_webhooks`, `mention_everyone`", inline=False)
+
+        await interaction.followup.send(embed=embed)
+
+
+
+
+    
+
 async def setup(bot: commands.Bot):
     '''
     Agrega el cog al bot

@@ -28,9 +28,7 @@ logger = Logger().get_logger()
 # Clases
 
 intents = discord.Intents.default()
-intents.message_content = True  # Habilitar la intención de recibir contenido de mensajes
-intents.messages = True
-intents.guilds = True
+intents.all()  # Habilitar todos los eventos
 
 bot = commands.Bot(command_prefix='/', intents=intents)
 
