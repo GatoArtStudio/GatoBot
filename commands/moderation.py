@@ -166,7 +166,12 @@ class Moderation(commands.Cog):
             color=discord.Color.green()
         )
 
-        embed.add_field(name="Roles modificados", value=", ".join(roles_modified), inline=False)
+        # Dividir la lista de roles modificados en múltiples campos si es necesario
+        roles_modified_str = ", ".join(roles_modified)
+        max_length = 1000
+        for i in range(0, len(roles_modified_str), max_length):
+            embed.add_field(name="Roles modificados", value=roles_modified_str[i:i+max_length], inline=False)
+            
         embed.add_field(name="Permisos modificados", value="`use_external_apps`, `manage_webhooks`, `mention_everyone`", inline=False)
 
         await interaction.followup.send(embed=embed)
