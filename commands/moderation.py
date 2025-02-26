@@ -1,3 +1,4 @@
+import re
 import discord
 import datetime
 import typing
@@ -134,15 +135,36 @@ class Moderation(commands.Cog):
 
     @app_commands.command(name='setup_security', description='Configura el servidor con unas configuraciones pre-configuradas, mas informacion en la web del bot.')
     @has_permissions(administrator=True) # Verifica que el usuario tenga permisos de administrador
-    async def setup_security(self, interaction: discord.Interaction, hidden: bool = False):
+    @app_commands.describe(hidden = 'Oculta el mensaje de respuesta.', ignored_roles = 'Lista de roles a ignorar, debes mencionar los roles a ignorar usando el @.')
+    async def setup_security(self, interaction: discord.Interaction, hidden: bool = False, ignored_roles: typing.Optional[str] = None):
+        """Configura el servidor con unas configuraciones pre-configuradas.
+
+        Args:
+            interaction (discord.Interaction): La interaccion que se realiza este comando.
+            hidden (bool, optional): Indica si el mensaje de respuesta debe ser oculto. Defaults to False.
+            ignored_roles (List[discord.Role], optional): Lista de roles a ignorar. Defaults to None.
+        """
+        # Si hay roles ignorados, convertirlos a objetos discord.Role
+        roles = []
+        if ignored_roles:
+            for role_id in re.findall(r'\d{17,19}', ignored_roles):
+                role = interaction.guild.get_role(int(role_id))
+                if role:
+                    roles.append(role)
 
         await interaction.response.defer(ephemeral=hidden)
 
         guild = interaction.guild
         roles_modified = []
         count = 0
+        ignored_roles_ids = [role.id for role in roles] if roles else []
 
         for role in guild.roles:
+            # Ignorar los roles especificados
+            if role.id in ignored_roles_ids:
+                continue
+
+            # Modificar los permisos de los roles
             if not role.permissions.administrator:
                 try:
                     new_perms = role.permissions
