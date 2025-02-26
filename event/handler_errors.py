@@ -16,6 +16,8 @@ class HandlerErrorCommands(commands.Cog):
 
         await interaction.response.defer(ephemeral=True)
 
+        logger.error(f"Error en el comando: {error}")
+
         if isinstance(error, app_commands.MissingPermissions):
 
             embed = discord.Embed(title="No tienes permisos", description="No tienes permisos para usar este comando.", color=discord.Color.red())
