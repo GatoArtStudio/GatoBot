@@ -178,7 +178,7 @@ temp_package
 recordings/
 ip_list.yaml
 users.yaml
-www/uploads/
+www/gatobot/uploads/
 temp_links.yaml
 cert.pem
 key.pem

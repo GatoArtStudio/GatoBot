@@ -16,9 +16,9 @@ logger = Logger().get_logger()
 class ServerHTTP:
     def __init__(self):
         self.app = FastAPI()
-        self.templates = Jinja2Templates(directory='www/templates')
-        self.app.mount("/static", StaticFiles(directory="www/static"), name="static")
-        self.upload_dir = Path("www/uploads")
+        self.templates = Jinja2Templates(directory='www/gatobot/templates')
+        self.app.mount("/static", StaticFiles(directory="www/gatobot/static"), name="static")
+        self.upload_dir = Path("www/gatobot/uploads")
         self.upload_dir.mkdir(exist_ok=True)
         self.setup_routes()
         self.cookies = {}
