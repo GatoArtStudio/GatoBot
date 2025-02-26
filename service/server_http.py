@@ -19,7 +19,7 @@ class ServerHTTP:
         self.templates = Jinja2Templates(directory='www/gatobot/templates')
         self.app.mount("/static", StaticFiles(directory="www/gatobot/static"), name="static")
         self.upload_dir = Path("www/gatobot/uploads")
-        self.upload_dir.mkdir(exist_ok=True)
+        self.upload_dir.mkdir(parents=True, exist_ok=True) # Crea el directorio si no existe
         self.setup_routes()
         self.cookies = {}
         self.users = {}
