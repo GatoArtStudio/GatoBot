@@ -138,11 +138,18 @@ class Messages(commands.Cog):
                 "@everyone steam gift 50$ - [steamcommunity.com/gift-card/pay/50](https://)",
                 "50$ gift https://steamuconmmunity.com/s/10329209416",
                 "50$ steam gift - https://",
-                "https://tenor.com/view/"
+                "https://tenor.com/view/",
+                "https://x.com/",
+                "https://www.instagram.com/",
+                "https://www.tiktok.com/",
+                "https://www.youtube.com/",
+                "https://www.twitch.tv/",
+                "https://www.facebook.com/",
             ]
         labels = [
                 "spam", "no_spam", "no_spam", "no_spam", "no_spam",
-                "no_spam", "no_spam", "spam", "no_spam", "spam", "no_spam", "no_spam", "spam", "spam", "spam", "no_spam"
+                "no_spam", "no_spam", "spam", "no_spam", "spam", "no_spam", "no_spam", "spam", "spam", "spam", 
+                "no_spam", "no_spam", "no_spam", "no_spam", "no_spam", 'no_spam', "no_spam"
             ]
         
         # Convertimos los mensajes a una array 2d
