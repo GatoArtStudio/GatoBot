@@ -56,7 +56,7 @@ const BotInterface: React.FC = () => {
             <p className="text-2xl text-white">{status?.uptime || 'No disponible'}</p>
           </div>
           <div className="bg-[#1a1f3c]/30 backdrop-blur-lg rounded-xl p-6 border border-cyan-500/10">
-            <h3 className="text-lg font-semibold text-cyan-400 mb-2">Servidores</h3>
+            <h3 className="text-lg font-semibold text-cyan-400 mb-2">Servidores de Discord</h3>
             <p className="text-2xl text-white">{status?.guild_count || 0}</p>
           </div>
         </div>
