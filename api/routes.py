@@ -61,12 +61,20 @@ async def get_bot_status():
 async def get_commands():
     try:
         commands = []
-        for cmd in bot.commands:
+        for cmd in bot.tree.get_commands():
+
+            params = []
+            if hasattr(cmd, 'parameters'):
+                for param in cmd.parameters:
+                    param_str = f'<{param.name}: {param.type.name}>'
+                    params.append(param_str)
+
             commands.append({
                 "name": cmd.name,
                 "description": cmd.description or "No description available",
-                "usage": cmd.usage
+                "usage": f'/{cmd.name} {" ".join(params)}' if params else f'/{cmd.name}'
             })
         return commands
     except Exception as e:
+        logger.error(str(e))
         raise HTTPException(status_code=500, detail=str(e))
