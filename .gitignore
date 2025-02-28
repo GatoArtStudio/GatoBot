@@ -183,3 +183,43 @@ temp_links.yaml
 cert.pem
 key.pem
 cloudflared-linux-amd64
+
+# Node.js
+node_modules/
+.node_installation/
+**/node_installation/
+.local/
+
+# Frontend build
+frontend/dist/
+frontend/.astro/
+frontend/node_modules/
+
+# Cloudflare
+.cloudflared/
+cloudflared*
+
+# Static files
+www/gatobot/static/assets/
+www/gatobot/static/build/
+
+# Temporary files
+**/temp/
+**/tmp/
+**/*.tmp
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Local env files
+.env*
+.env.local
+.env.*.local
+
+# System Files
+.DS_Store
+Thumbs.db

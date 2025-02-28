@@ -1,0 +1,57 @@
+---
+import Navbar from '../components/Navbar';
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+}
+
+const { title } = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+  </head>
+  <body class="bg-gradient-to-br from-slate-950 via-[#0a0920] to-slate-950 min-h-screen text-white">
+    <Navbar client:load />
+    <slot />
+  </body>
+</html>
+
+<style is:global>
+  :root {
+    --accent: 239, 68, 68;
+    --accent-light: 255, 241, 242;
+    --accent-dark: 127, 29, 29;
+    --accent-gradient: linear-gradient(
+      45deg,
+      rgb(var(--accent)),
+      rgb(var(--accent-light)) 30%,
+      white 60%
+    );
+  }
+
+  /* Scrollbar personalizado */
+  ::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #0a0920;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #2dd4bf;
+    border-radius: 5px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #14b8a6;
+  }
+</style>
