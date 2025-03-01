@@ -92,41 +92,6 @@ class OtherCommands(commands.Cog):
         except discord.HTTPException as e:
             await interaction.response.send_message(f"Ocurrió un error al intentar aislar al usuario: {user.mention}, error: {e}", ephemeral=True)
 
-
-    @app_commands.command(name='create_embed', description='Comando para crear Embed')
-    @has_permissions(administrator=True)
-    @app_commands.autocomplete(color=utils_tools.color_autocomplete)
-    @app_commands.describe(color='Color del Embed', title='Tiulo del Embed', description='Descripción del Embed', description_embed='Descripción del Embed', author='Autor del Embed', channel='Canal donde se enviara el Embed')
-    async def create_embed(self, interaction: discord.Interaction, channel: discord.TextChannel, color: str, title: typing.Optional[str] = None, description: typing.Optional[str] = None, description_embed: typing.Optional[str] = None, author: typing.Optional[discord.Member] = None):
-        # Compruba si el usuario tiene permisos de administracion
-        if not interaction.user.guild_permissions.administrator:
-            await interaction.response.send_message("No tienes permisos para usar este comando.", ephemeral=True)
-            return
-        
-        color_value = ColorDiscord[color.upper()].value
-        description_embed = description_embed.replace('\\n', '\n')
-        embed = discord.Embed(
-            title=title,
-            description=description_embed,
-            color=color_value
-        )
-
-        if author is None and description is None:
-            await channel.send(embed=embed)
-            await interaction.response.send_message(f"Mensaje enviado al canal {channel.mention}", ephemeral=True)
-        elif author is None:
-            await channel.send(content=description,embed=embed)
-            await interaction.response.send_message(f"Mensaje enviado al canal {channel.mention}", ephemeral=True)
-        else:
-            if description is None:
-                embed.set_author(name=author.display_name, icon_url=author.display_avatar.url)
-                await channel.send(embed=embed)
-                await interaction.response.send_message(f"Mensaje enviado al canal {channel.mention}", ephemeral=True)
-            else:
-                await channel.send(f'{description}\n\nAutor: {author}',embed=embed)
-                await interaction.response.send_message(f"Mensaje enviado al canal {channel.mention}", ephemeral=True)
-
-
     @app_commands.command(name='play', description='Escucha musica')
     async def play(self, interaction: discord.Interaction, query: str):
         args = query.split(' ')
