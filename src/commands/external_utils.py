@@ -5,8 +5,8 @@ from discord import app_commands
 from discord.ext import commands
 
 from core.implements.discord_bot import DiscordBot
-from src.config.config import USER_DEV_ID
-from src.helpers.colors import ColorDiscord
+from config.config import USER_DEV_ID
+from helpers.colors import ColorDiscord
 
 # Instancia el debug
 logger: logging.Logger
