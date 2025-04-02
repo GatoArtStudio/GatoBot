@@ -68,6 +68,8 @@ class ServidorWeb(IInfrastructureInitiator, HerlpersNetwork):
 
         # Montamos archivos estáticos para la web
         frontend_public =  self._frontend_path / 'dist'
+        # Verficar si la carpeta de archivos estáticos para la web existe
+        frontend_public.mkdir(parents=True, exist_ok=True)
         self._app.mount(
             "/",
             StaticFiles(
