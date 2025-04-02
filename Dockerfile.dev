@@ -15,4 +15,4 @@ EXPOSE 25978
 EXPOSE 26206
 
 # Ejecutar el bot
-CMD ["python", "main.py"]
+CMD ["python", "src/main.py"]

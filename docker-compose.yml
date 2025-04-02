@@ -9,3 +9,6 @@ services:
       - "25978:25978"
       - "26206:26206"
     env_file: ".env"
+    volumes:
+      - .:/app
+    command: [ "python3", "src/main.py" ]

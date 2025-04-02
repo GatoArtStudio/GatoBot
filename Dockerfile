@@ -4,15 +4,12 @@ FROM python:3.11
 # Establecer el directorio de trabajo
 WORKDIR /app
 
-# Copiar los archivos necesarios
-COPY . /app
+# Copiar solo requirements.txt para cachear la instalación de dependencias
+COPY requirements.txt /app/requirements.txt
 
-# Instalar las dependencias
+# Instalar dependencias
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Exponer el puerto que el bot usará
 EXPOSE 25978
 EXPOSE 26206
-
-# Ejecutar el bot
-CMD ["python", "main.py"]

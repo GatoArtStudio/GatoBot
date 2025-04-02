@@ -173,16 +173,18 @@ ssh_host_key.pub
 test.py
 trusted_client_host_keys
 trusted_server_keys
-ffmpeg/
+.local/ffmpeg/
 temp_package
 recordings/
 ip_list.yaml
 users.yaml
-www/gatobot/uploads/
+src/www/gatobot/uploads/
 temp_links.yaml
 cert.pem
 key.pem
-cloudflared-linux-amd64
+tmp/
+bin/
+logs/
 
 # Node.js
 node_modules/
@@ -191,17 +193,13 @@ node_modules/
 .local/
 
 # Frontend build
-frontend/dist/
-frontend/.astro/
-frontend/node_modules/
-
-# Cloudflare
-.cloudflared/
-cloudflared*
+src/frontend/dist/
+src/frontend/.astro/
+src/frontend/node_modules/
 
 # Static files
-www/gatobot/static/assets/
-www/gatobot/static/build/
+src/www/gatobot/static/assets/
+src/www/gatobot/static/build/
 
 # Temporary files
 **/temp/
@@ -216,7 +214,7 @@ yarn-debug.log*
 yarn-error.log*
 
 # Local env files
-.env*
+.env
 .env.local
 .env.*.local
 

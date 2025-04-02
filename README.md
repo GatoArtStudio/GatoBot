@@ -90,7 +90,6 @@ GatoBot es un bot de Discord versátil y amigable, diseñado para mejorar la exp
 3. **Instalar dependencias**
    ```bash
    pip install -r requirements.txt
-   cd frontend && npm install
    ```
 
 4. **Iniciar el bot**
@@ -99,18 +98,26 @@ GatoBot es un bot de Discord versátil y amigable, diseñado para mejorar la exp
    docker-compose up -d
 
    # Sin Docker
-   python main.py
+   python src/main.py
    ```
 
 ## 🌐 Arquitectura
 
 ```
 GatoBot/
-├── api/            # API REST con FastAPI
-├── base/           # Núcleo del bot
-├── commands/       # Comandos del bot
-├── frontend/       # Interfaz web (Astro + React)
-└── utils/          # Utilidades y helpers
+└── src
+   ├── api/            # API REST con FastAPI
+   ├── assets/         # Recursos estáticos
+   ├── commands/       # Comandos del bot
+   ├── config/         # Configuraciones
+   ├── core/           # Núcleo del bot
+   ├── database/       # Base de datos
+   ├── events/         # Eventos del bot
+   ├── frontend/       # Interfaz web (Astro + React)
+   ├── helpers/        # Utilidades y helpers
+   ├── models/         # Modelos de datos
+   ├── services/       # Servicios
+   └── views/          # Vistas de discord
 ```
 
 ## 🤝 Contribuir
@@ -123,10 +130,10 @@ Este proyecto está bajo la Licencia MIT - ver el archivo [LICENSE](LICENSE) par
 
 ## 👥 Créditos
 
-Desarrollado con ❤️ por [GatoArtStudios](https://github.com/GatoArtStudios)
+Desarrollado con ❤️ por [GatoArtStudio](https://github.com/GatoArtStudio)
 
 ## 📞 Soporte
 
-- [Servidor de Discord](https://discord.gg/tuservidor)
+- [Servidor de Discord](https://redes.gatoartstudio.art)
 - [Sitio Web](https://gatobot.gatoartstudio.art)
 - [Correo](mailto:contact@gatoartstudio.art)
