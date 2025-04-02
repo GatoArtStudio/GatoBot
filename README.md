@@ -1,7 +1,7 @@
 # 🐱 GatoBot
 
 <div align="center">
-  <img src="frontend/public/logo.svg" alt="GatoBot Logo" width="200"/>
+  <img src="src/frontend/gatobot/public/logo.svg" alt="GatoBot Logo" width="200"/>
   
   [![Discord](https://img.shields.io/badge/Discord-Add%20Bot-7289DA?style=for-the-badge&logo=discord&logoColor=white)](https://gatobot.gatoartstudio.art)
   [![Website](https://img.shields.io/badge/Website-Visit-2ea44f?style=for-the-badge&logo=firefox&logoColor=white)](https://gatobot.gatoartstudio.art)
