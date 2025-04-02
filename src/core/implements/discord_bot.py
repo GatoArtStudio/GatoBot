@@ -89,7 +89,7 @@ class DiscordBot(Bot, IDiscordBot, IInfrastructureInitiator):
 
         # Cargamos los eventos
         for filename in files_path_event.glob('*.py'):
-            if filename.name == '__init__.py':
+            if filename.name == '__init__.py' or '.old' in filename.name:
                 continue
             self.logger.info(f"Cargando extencion para eventos: {filename.stem}")
             await self.load_extension(f'events.{filename.stem}')
