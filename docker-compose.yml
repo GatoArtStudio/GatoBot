@@ -1,14 +1,11 @@
 services:
   gatobot:
-    build: 
-      context: .
-      dockerfile: Dockerfile
-      no_cache: true
-    image: gatobot:latest
+    image: python:3.11
     ports:
       - "25978:25978"
       - "26206:26206"
     env_file: ".env"
     volumes:
       - .:/app
-    command: [ "python3", "src/main.py" ]
+    working_dir: /app
+    entrypoint: [ "/app/entrypoint.sh" ]
