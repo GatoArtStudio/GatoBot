@@ -1,0 +1,22 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Logo from '../assets/logo.svg';
+---
+
+<Layout
+    title="Error | GatoBot"
+    navbar={false}>
+    <main
+        class="flex justify-center items-center h-dvh">
+
+        <div
+            class="flex flex-col justify-center items-center gap-4">
+            <img src={Logo.src} alt="Logo GatoBot" class="h-20">
+            <p>
+                Recurso no disponible
+            </p>
+            <a href="/" class=" text-primary-700 hover:text-accent-500">Volver al inicio</a>
+        </div>
+
+    </main>
+</Layout>

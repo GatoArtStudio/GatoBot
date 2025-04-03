@@ -1,18 +1,15 @@
 import { defineConfig } from 'astro/config';
 import react from '@astrojs/react';
-import tailwind from '@astrojs/tailwind';
+import tailwindcss from "@tailwindcss/vite";
+import partytown from '@astrojs/partytown';
 
 // https://astro.build/config
 export default defineConfig({
   integrations: [
     react(),
-    tailwind({
-      // Configuración de Tailwind
-      config: { path: './tailwind.config.mjs' }
-    })
+    partytown()
   ],
-  output: 'static',
-  build: {
-    assets: 'assets'
+  vite: {
+    plugins: [tailwindcss()],
   }
 });

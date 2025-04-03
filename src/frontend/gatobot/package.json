@@ -1,7 +1,7 @@
 {
   "name": "gatobot-frontend",
   "version": "1.0.0",
-  "private": true,
+  "type": "module",
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
@@ -9,18 +9,16 @@
     "preview": "astro preview"
   },
   "dependencies": {
-    "@astrojs/react": "^3.0.9",
-    "@types/react": "^18.2.48",
-    "@types/react-dom": "^18.2.18",
-    "astro": "^4.2.1",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0"
-  },
-  "devDependencies": {
-    "@astrojs/tailwind": "^5.1.5",
-    "autoprefixer": "^10.4.20",
-    "postcss": "^8.5.3",
-    "tailwindcss": "^3.4.17",
-    "typescript": "^5.3.3"
+    "@astrojs/partytown": "^2.1.4",
+    "@astrojs/react": "^4.2.3",
+    "@tailwindcss/postcss": "^4.1.1",
+    "@tailwindcss/vite": "^4.1.1",
+    "@types/react": "^19.1.0",
+    "@types/react-dom": "^19.1.1",
+    "astro": "^5.5.6",
+    "autoprefixer": "^10.4.21",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "tailwindcss": "^4.1.1"
   }
 }

@@ -39,40 +39,40 @@ const BotInterface: React.FC = () => {
   return (
     <div className="container mx-auto px-4 py-8">
       {/* Estado del Bot */}
-      <div className="bg-gradient-to-br from-[#0a0920] via-[#1a1f3c] to-[#0a0920] rounded-2xl shadow-[0_4px_30px_rgba(45,212,191,0.1)] p-8 mb-8 backdrop-blur-xl">
+      <div className="bg-gradient-to-br from-background-100 via-background-200 to-background-50 rounded-2xl shadow-background-200 shadow-lg p-8 mb-8 backdrop-blur-xl">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-3xl font-bold text-white">Estado del Bot</h2>
+          <h2 className="text-3xl font-bold text-text-900">Estado del Bot</h2>
           <div className="flex items-center space-x-3">
             <span className={`inline-block w-3 h-3 rounded-full ${
-              status?.status === 'online' ? 'bg-teal-400 shadow-[0_0_10px_rgba(45,212,191,0.5)]' : 'bg-red-400 shadow-[0_0_10px_rgba(239,68,68,0.5)]'
+              status?.status === 'online' ? 'bg-accent-600' : 'bg-red-400 shadow-[0_0_10px_rgba(239,68,68,0.5)]'
             } animate-pulse`}></span>
-            <span className="text-white opacity-90">{status?.status}</span>
+            <span className="text-text-900 opacity-90">{status?.status}</span>
           </div>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="bg-[#1a1f3c]/30 backdrop-blur-lg rounded-xl p-6 border border-teal-500/10">
-            <h3 className="text-lg font-semibold text-teal-400 mb-2">Tiempo Activo</h3>
-            <p className="text-2xl text-white">{status?.uptime || 'No disponible'}</p>
+          <div className="bg-background-100/30 backdrop-blur-lg rounded-xl p-6 border border-secondary-300/10">
+            <h3 className="text-lg font-semibold text-accent-600 mb-2">Tiempo Activo</h3>
+            <p className="text-2xl text-text-900">{status?.uptime || 'No disponible'}</p>
           </div>
-          <div className="bg-[#1a1f3c]/30 backdrop-blur-lg rounded-xl p-6 border border-cyan-500/10">
-            <h3 className="text-lg font-semibold text-cyan-400 mb-2">Servidores de Discord</h3>
-            <p className="text-2xl text-white">{status?.guild_count || 0}</p>
+          <div className="bg-background-100/30 backdrop-blur-lg rounded-xl p-6 border border-secondary-300/10">
+            <h3 className="text-lg font-semibold text-accent-500 mb-2">Servidores de Discord</h3>
+            <p className="text-2xl text-text-900">{status?.guild_count || 0}</p>
           </div>
         </div>
       </div>
 
       {/* Comandos */}
-      <div className="bg-gradient-to-br from-[#0a0920] via-[#1a1f3c] to-[#0a0920] rounded-2xl shadow-[0_4px_30px_rgba(45,212,191,0.1)] p-8 backdrop-blur-xl">
-        <h2 className="text-3xl font-bold text-white mb-8">Comandos Disponibles</h2>
+      <div className="bg-gradient-to-br from-background-100 via-background-200 to-background-50 rounded-2xl shadow-background-200 shadow-lg p-8 backdrop-blur-xl">
+        <h2 className="text-3xl font-bold text-text-900 mb-8">Comandos Disponibles</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {commands.map((command) => (
             <div key={command.name} 
-                 className="bg-[#1a1f3c]/30 backdrop-blur-lg rounded-xl p-6 border border-teal-500/10 hover:border-teal-500/30 transition-all duration-300 ease-in-out hover:shadow-[0_0_15px_rgba(45,212,191,0.1)]">
-              <h3 className="text-xl font-semibold text-teal-400 mb-2">/{command.name}</h3>
-              <p className="text-white/80">{command.description}</p>
+                 className="bg-background-100 backdrop-blur-lg rounded-xl p-6 border border-accent-200/10 hover:border-accent-200/30 transition-all duration-300 ease-in-out hover:shadow-secondary-300 hover:shadow-lg">
+              <h3 className="text-xl font-semibold text-accent-500 mb-2">/{command.name}</h3>
+              <p className="text-text-900/80">{command.description}</p>
               {command.usage && (
-                <p className="mt-2 text-sm text-cyan-400">
+                <p className="mt-2 text-sm text-accent-600">
                   Uso: {command.usage}
                 </p>
               )}

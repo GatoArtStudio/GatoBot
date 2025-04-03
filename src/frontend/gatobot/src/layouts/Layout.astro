@@ -4,13 +4,19 @@ import '../styles/global.css';
 
 interface Props {
   title: string;
+  description?: string;
+  navbar?: boolean;
 }
 
-const { title } = Astro.props;
+const {
+  title = 'GatoBot - Tu Asistente Discord',
+  description = 'GatoBot es un bot de Discord versátil y amigable. Moderación, música, diversión y más. ¡Añade GatoBot a tu servidor ahora!',
+  navbar = true
+} = Astro.props;
 ---
 
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-theme="dark">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -18,21 +24,21 @@ const { title } = Astro.props;
     <meta name="generator" content={Astro.generator} />
     
     <!-- Metadatos principales -->
-    <title>{title} | GatoBot - Tu Asistente Discord</title>
-    <meta name="description" content="GatoBot es un bot de Discord versátil y amigable. Moderación, música, diversión y más. ¡Añade GatoBot a tu servidor ahora!" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
     
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://gatobot.gatoartstudio.art/" />
-    <meta property="og:title" content="GatoBot - Tu Asistente Discord" />
-    <meta property="og:description" content="GatoBot es un bot de Discord versátil y amigable. Moderación, música, diversión y más. ¡Añade GatoBot a tu servidor ahora!" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
     <meta property="og:image" content="https://gatobot.gatoartstudio.art/logo.svg" />
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image" />
     <meta property="twitter:url" content="https://gatobot.gatoartstudio.art/" />
-    <meta property="twitter:title" content="GatoBot - Tu Asistente Discord" />
-    <meta property="twitter:description" content="GatoBot es un bot de Discord versátil y amigable. Moderación, música, diversión y más. ¡Añade GatoBot a tu servidor ahora!" />
+    <meta property="twitter:title" content={title} />
+    <meta property="twitter:description" content={description} />
     <meta property="twitter:image" content="https://gatobot.gatoartstudio.art/logo.svg" />
 
     <!-- Metadatos adicionales -->
@@ -43,40 +49,28 @@ const { title } = Astro.props;
     <!-- Canonical URL -->
     <link rel="canonical" href="https://gatobot.gatoartstudio.art/" />
   </head>
-  <body class="bg-gradient-to-br from-slate-950 via-[#0a0920] to-slate-950 min-h-screen text-white">
-    <Navbar client:load />
+  <body class="bg-gradient-to-br from-background-100 via-background-200 to-background-50 min-h-screen text-text-900">
+  {navbar && <Navbar client:load />}
     <slot />
   </body>
 </html>
 
 <style is:global>
-  :root {
-    --accent: 239, 68, 68;
-    --accent-light: 255, 241, 242;
-    --accent-dark: 127, 29, 29;
-    --accent-gradient: linear-gradient(
-      45deg,
-      rgb(var(--accent)),
-      rgb(var(--accent-light)) 30%,
-      white 60%
-    );
-  }
-
   /* Scrollbar personalizado */
   ::-webkit-scrollbar {
     width: 10px;
   }
 
   ::-webkit-scrollbar-track {
-    background: #0a0920;
+    background: var(--background-50);
   }
 
   ::-webkit-scrollbar-thumb {
-    background: #2dd4bf;
+    background: var(--accent-500);
     border-radius: 5px;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background: #14b8a6;
+    background: var(--accent-500);
   }
 </style>
